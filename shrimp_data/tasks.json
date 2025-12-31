@@ -1,0 +1,909 @@
+{
+  "tasks": [
+    {
+      "id": "8098bb18-a2e9-4cb3-aa13-00d6e9f9dfe3",
+      "name": "Task 004: 타입 정의 및 인터페이스 설계",
+      "description": "프로젝트 전반에서 사용할 TypeScript 인터페이스와 타입을 정의합니다. PRD의 데이터 모델(User, Quote, QuoteItem)을 기반으로 types/database.ts, types/api.ts, types/notion.ts, types/forms.ts 파일을 생성하고, 기존 types/index.ts를 확장합니다.",
+      "notes": "기존 types/index.ts의 User 인터페이스는 companyName, notionApiKey 등이 없으므로 database.ts의 확장된 User로 교체 필요. 기존 ApiResponse, PaginatedResponse는 api.ts로 이동 후 index.ts에서 re-export.",
+      "status": "pending",
+      "dependencies": [],
+      "createdAt": "2025-12-31T04:21:21.088Z",
+      "updatedAt": "2025-12-31T04:21:21.088Z",
+      "relatedFiles": [
+        {
+          "path": "types/index.ts",
+          "type": "TO_MODIFY",
+          "description": "기존 공통 타입, 확장 및 re-export 정리",
+          "lineStart": 1,
+          "lineEnd": 33
+        },
+        {
+          "path": "types/database.ts",
+          "type": "CREATE",
+          "description": "데이터베이스 모델 타입 정의"
+        },
+        {
+          "path": "types/api.ts",
+          "type": "CREATE",
+          "description": "API 요청/응답 타입 정의"
+        },
+        {
+          "path": "types/notion.ts",
+          "type": "CREATE",
+          "description": "노션 API 관련 타입 정의"
+        },
+        {
+          "path": "types/forms.ts",
+          "type": "CREATE",
+          "description": "폼 데이터 타입 정의"
+        },
+        {
+          "path": "docs/PRD.md",
+          "type": "REFERENCE",
+          "description": "데이터 모델 섹션 참조"
+        },
+        {
+          "path": "tasks/004-type-definitions.md",
+          "type": "REFERENCE",
+          "description": "Task 명세서"
+        }
+      ],
+      "implementationGuide": "1. types/database.ts 생성:\\n   - User 인터페이스 (id, email, companyName, notionApiKey, notionDatabaseId, createdAt, updatedAt)\\n   - Quote 인터페이스 (id, userId, notionPageId, quoteNumber, clientName, clientContact, clientPhone, items, totalAmount, issueDate, validUntil, notes, shareId, createdAt, updatedAt)\\n   - QuoteItem 인터페이스 (name, quantity, unitPrice, amount, description)\\n   - QuoteStatus enum (DRAFT, SENT, VIEWED, EXPIRED)\\n\\n2. types/api.ts 생성:\\n   - 기존 ApiResponse<T>, PaginatedResponse<T> 이동\\n   - QuoteListResponse, QuoteDetailResponse 타입\\n   - SyncRequest, SyncResponse 타입\\n   - SettingsRequest, SettingsResponse 타입\\n\\n3. types/notion.ts 생성:\\n   - NotionDatabaseProperty 타입\\n   - NotionPageResponse 타입\\n   - NotionToQuoteMapper 함수 시그니처 타입\\n\\n4. types/forms.ts 생성:\\n   - SettingsFormData 타입 (notionApiKey, notionDatabaseId)\\n   - 기존 auth.ts의 LoginFormData, RegisterFormData re-export\\n\\n5. types/index.ts 수정:\\n   - 모든 타입 파일에서 re-export\\n   - 기존 User 타입을 database.ts로 이동",
+      "verificationCriteria": "1. 모든 타입 파일이 생성되고 ESLint/TypeScript 컴파일 에러 없음\\n2. npm run build 성공\\n3. 기존 코드에서 types/index.ts import가 정상 동작\\n4. PRD의 데이터 모델과 타입 정의가 일치",
+      "analysisResult": "노션 견적서 뷰어 MVP 개발 - ROADMAP.md 기반 순차적 구현. Phase 1 완료 상태에서 Phase 2부터 시작. 기존 코드 패턴(제네릭 타입, Zod 스키마, shadcn/ui)을 재사용하며, 각 Task 완료 후 다음 Task로 진행."
+    },
+    {
+      "id": "baa5e2ae-3865-4591-98ff-8cfd9e936ac5",
+      "name": "Task 005: 데이터베이스 스키마 설계",
+      "description": "Supabase에서 사용할 PostgreSQL 테이블 스키마를 설계합니다. users, quotes 테이블의 DDL과 RLS(Row Level Security) 정책을 SQL 마이그레이션 파일로 작성합니다.",
+      "notes": "Supabase CLI 설치 필요 (npm install supabase). 실제 마이그레이션은 Phase 4에서 수행. 현재는 SQL 파일 작성만.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "8098bb18-a2e9-4cb3-aa13-00d6e9f9dfe3"
+        }
+      ],
+      "createdAt": "2025-12-31T04:21:21.088Z",
+      "updatedAt": "2025-12-31T04:21:21.088Z",
+      "relatedFiles": [
+        {
+          "path": "supabase/migrations/001_create_users_table.sql",
+          "type": "CREATE",
+          "description": "users 테이블 DDL"
+        },
+        {
+          "path": "supabase/migrations/002_create_quotes_table.sql",
+          "type": "CREATE",
+          "description": "quotes 테이블 DDL"
+        },
+        {
+          "path": "supabase/migrations/003_create_rls_policies.sql",
+          "type": "CREATE",
+          "description": "RLS 정책"
+        },
+        {
+          "path": "types/database.ts",
+          "type": "REFERENCE",
+          "description": "타입 정의 참조"
+        },
+        {
+          "path": "docs/PRD.md",
+          "type": "REFERENCE",
+          "description": "데이터 모델 섹션 참조"
+        }
+      ],
+      "implementationGuide": "1. supabase/migrations/ 디렉토리 생성\\n\\n2. 001_create_users_table.sql 작성:\\n   - users 테이블 DDL (id UUID PRIMARY KEY, email, company_name, notion_api_key, notion_database_id, created_at, updated_at)\\n   - email UNIQUE 제약조건\\n   - created_at, updated_at DEFAULT now()\\n\\n3. 002_create_quotes_table.sql 작성:\\n   - quotes 테이블 DDL (id, user_id, notion_page_id, quote_number, client_name, client_contact, client_phone, items JSONB, total_amount, issue_date, valid_until, notes, share_id, created_at, updated_at)\\n   - user_id REFERENCES users(id)\\n   - share_id UNIQUE 제약조건\\n   - notion_page_id UNIQUE 제약조건\\n\\n4. 003_create_rls_policies.sql 작성:\\n   - users 테이블 RLS: 본인 데이터만 조회/수정\\n   - quotes 테이블 RLS: 본인 견적서만 조회/수정\\n   - 공유 링크용 quotes 조회 정책 (share_id 기반 공개 조회)\\n\\n5. docs/database-schema.md 문서 작성 (테이블 구조 설명)",
+      "verificationCriteria": "1. 모든 SQL 파일이 문법적으로 올바름\\n2. 테이블 간 관계(FK)가 올바르게 정의됨\\n3. RLS 정책이 보안 요구사항 충족\\n4. types/database.ts의 인터페이스와 테이블 컬럼이 일치",
+      "analysisResult": "노션 견적서 뷰어 MVP 개발 - ROADMAP.md 기반 순차적 구현. Phase 1 완료 상태에서 Phase 2부터 시작. 기존 코드 패턴(제네릭 타입, Zod 스키마, shadcn/ui)을 재사용하며, 각 Task 완료 후 다음 Task로 진행."
+    },
+    {
+      "id": "25febe93-aa5c-420d-a0b2-b2bc56490941",
+      "name": "Task 006: 인증 페이지 UI 구현",
+      "description": "로그인 및 회원가입 페이지의 UI를 완성합니다. 기존 골격 컴포넌트(login-form.tsx, register-form.tsx)를 확장하여 폼 유효성 검사 UI, 에러 메시지 표시, 로딩 상태를 구현합니다.",
+      "notes": "실제 인증 로직(Supabase Auth)은 Phase 4에서 구현. 현재는 UI와 클라이언트 사이드 유효성 검사만 구현. onSubmit은 console.log로 대체.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "8098bb18-a2e9-4cb3-aa13-00d6e9f9dfe3"
+        }
+      ],
+      "createdAt": "2025-12-31T04:21:21.088Z",
+      "updatedAt": "2025-12-31T04:21:21.088Z",
+      "relatedFiles": [
+        {
+          "path": "components/features/auth/login-form.tsx",
+          "type": "TO_MODIFY",
+          "description": "로그인 폼 컴포넌트 확장"
+        },
+        {
+          "path": "components/features/auth/register-form.tsx",
+          "type": "TO_MODIFY",
+          "description": "회원가입 폼 컴포넌트 확장"
+        },
+        {
+          "path": "app/(auth)/login/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "로그인 페이지"
+        },
+        {
+          "path": "app/(auth)/register/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "회원가입 페이지"
+        },
+        {
+          "path": "lib/validations/auth.ts",
+          "type": "REFERENCE",
+          "description": "Zod 스키마 참조"
+        }
+      ],
+      "implementationGuide": "1. components/features/auth/login-form.tsx 확장:\\n   - react-hook-form + Zod 연동 (lib/validations/auth.ts의 loginSchema 사용)\\n   - 이메일, 비밀번호 Input 필드 구현\\n   - 필드별 에러 메시지 표시\\n   - 로딩 상태 버튼 (isSubmitting)\\n   - 회원가입 페이지 링크\\n\\n2. components/features/auth/register-form.tsx 확장:\\n   - react-hook-form + Zod 연동 (registerSchema 사용)\\n   - 이름, 이메일, 비밀번호, 비밀번호 확인 필드\\n   - 비밀번호 강도 표시 (선택사항)\\n   - 필드별 에러 메시지 표시\\n   - 로그인 페이지 링크\\n\\n3. app/(auth)/login/page.tsx 업데이트:\\n   - LoginForm 컴포넌트 연동\\n   - 페이지 메타데이터 설정\\n\\n4. app/(auth)/register/page.tsx 업데이트:\\n   - RegisterForm 컴포넌트 연동\\n   - 페이지 메타데이터 설정",
+      "verificationCriteria": "1. 로그인/회원가입 폼이 정상 렌더링\\n2. 유효성 검사 에러 메시지가 올바르게 표시\\n3. 빈 필드 제출 시 에러 표시\\n4. 로딩 상태가 버튼에 반영\\n5. Playwright MCP로 폼 동작 테스트",
+      "analysisResult": "노션 견적서 뷰어 MVP 개발 - ROADMAP.md 기반 순차적 구현. Phase 1 완료 상태에서 Phase 2부터 시작. 기존 코드 패턴(제네릭 타입, Zod 스키마, shadcn/ui)을 재사용하며, 각 Task 완료 후 다음 Task로 진행."
+    },
+    {
+      "id": "11513fcf-71f9-4e59-84dc-a6665df5350a",
+      "name": "Task 007: 대시보드 레이아웃 및 설정 페이지 UI",
+      "description": "대시보드 사이드바 네비게이션을 완성하고, 설정 페이지 UI(노션 API 키, 데이터베이스 ID 입력 폼)를 구현합니다.",
+      "notes": "실제 노션 API 연동은 Phase 5에서 구현. 현재는 UI만 구현하고 더미 상태 사용.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "8098bb18-a2e9-4cb3-aa13-00d6e9f9dfe3"
+        }
+      ],
+      "createdAt": "2025-12-31T04:21:21.088Z",
+      "updatedAt": "2025-12-31T04:21:21.088Z",
+      "relatedFiles": [
+        {
+          "path": "components/layout/app-sidebar.tsx",
+          "type": "TO_MODIFY",
+          "description": "사이드바 컴포넌트 확장"
+        },
+        {
+          "path": "components/features/settings/settings-form.tsx",
+          "type": "CREATE",
+          "description": "설정 폼 컴포넌트"
+        },
+        {
+          "path": "components/features/settings/connection-status.tsx",
+          "type": "CREATE",
+          "description": "연동 상태 컴포넌트"
+        },
+        {
+          "path": "components/features/settings/index.ts",
+          "type": "CREATE",
+          "description": "설정 컴포넌트 export"
+        },
+        {
+          "path": "app/(dashboard)/settings/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "설정 페이지"
+        },
+        {
+          "path": "config/navigation.ts",
+          "type": "REFERENCE",
+          "description": "네비게이션 설정 참조"
+        }
+      ],
+      "implementationGuide": "1. components/layout/app-sidebar.tsx 확장:\\n   - config/navigation.ts의 dashboardNav 활용\\n   - 현재 경로 하이라이트\\n   - 로그아웃 버튼 추가\\n   - 사용자 정보 표시 영역\\n\\n2. components/features/settings/settings-form.tsx 생성:\\n   - 노션 API 키 입력 필드 (password 타입, 마스킹)\\n   - 노션 데이터베이스 ID 입력 필드\\n   - 연동 테스트 버튼\\n   - 저장 버튼\\n   - 연동 상태 표시 (성공/실패 배지)\\n\\n3. components/features/settings/connection-status.tsx 생성:\\n   - 연동 상태 표시 컴포넌트 (연결됨/연결안됨/테스트중)\\n   - 마지막 동기화 시간 표시\\n\\n4. app/(dashboard)/settings/page.tsx 업데이트:\\n   - SettingsForm 컴포넌트 연동\\n   - 페이지 헤더 및 설명 추가",
+      "verificationCriteria": "1. 사이드바 네비게이션이 정상 동작\\n2. 현재 경로가 하이라이트됨\\n3. 설정 폼이 정상 렌더링\\n4. API 키 필드가 마스킹됨\\n5. Playwright MCP로 설정 페이지 테스트",
+      "analysisResult": "노션 견적서 뷰어 MVP 개발 - ROADMAP.md 기반 순차적 구현. Phase 1 완료 상태에서 Phase 2부터 시작. 기존 코드 패턴(제네릭 타입, Zod 스키마, shadcn/ui)을 재사용하며, 각 Task 완료 후 다음 Task로 진행."
+    },
+    {
+      "id": "56b4e503-5fb4-4549-a84d-75598168d4f3",
+      "name": "Task 008: 견적서 목록 페이지 UI 구현",
+      "description": "견적서 카드 목록 컴포넌트를 더미 데이터로 구현합니다. 검색, 필터링 UI와 동기화 버튼, 공유 링크 복사 버튼을 포함합니다.",
+      "notes": "실제 API 연동은 Phase 6에서 구현. 현재는 더미 데이터 사용. 클립보드 복사는 toast로 피드백.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "8098bb18-a2e9-4cb3-aa13-00d6e9f9dfe3"
+        },
+        {
+          "taskId": "11513fcf-71f9-4e59-84dc-a6665df5350a"
+        }
+      ],
+      "createdAt": "2025-12-31T04:21:21.088Z",
+      "updatedAt": "2025-12-31T04:21:21.088Z",
+      "relatedFiles": [
+        {
+          "path": "lib/mock-data.ts",
+          "type": "CREATE",
+          "description": "더미 데이터"
+        },
+        {
+          "path": "components/features/quotes/quote-card.tsx",
+          "type": "CREATE",
+          "description": "견적서 카드 컴포넌트"
+        },
+        {
+          "path": "components/features/quotes/quote-list.tsx",
+          "type": "CREATE",
+          "description": "견적서 목록 컴포넌트"
+        },
+        {
+          "path": "components/features/quotes/quote-filters.tsx",
+          "type": "CREATE",
+          "description": "필터 컴포넌트"
+        },
+        {
+          "path": "components/features/quotes/sync-button.tsx",
+          "type": "CREATE",
+          "description": "동기화 버튼"
+        },
+        {
+          "path": "components/features/quotes/index.ts",
+          "type": "CREATE",
+          "description": "견적서 컴포넌트 export"
+        },
+        {
+          "path": "app/(dashboard)/quotes/page.tsx",
+          "type": "CREATE",
+          "description": "견적서 목록 페이지"
+        },
+        {
+          "path": "types/database.ts",
+          "type": "REFERENCE",
+          "description": "Quote 타입 참조"
+        }
+      ],
+      "implementationGuide": "1. lib/mock-data.ts 생성:\\n   - 견적서 더미 데이터 배열 (5-10개)\\n   - Quote 타입 기반 데이터 생성\\n\\n2. components/features/quotes/quote-card.tsx 생성:\\n   - 견적서 카드 컴포넌트\\n   - 견적서 번호, 클라이언트명, 금액, 작성일 표시\\n   - 공유 링크 복사 버튼 (navigator.clipboard 사용)\\n   - 상세 보기 링크\\n\\n3. components/features/quotes/quote-list.tsx 생성:\\n   - 견적서 카드 그리드/리스트 뷰\\n   - 빈 상태 표시 (EmptyState 컴포넌트 활용)\\n\\n4. components/features/quotes/quote-filters.tsx 생성:\\n   - 검색 입력 필드\\n   - 상태 필터 (전체/발행됨/조회됨/만료)\\n   - 정렬 옵션 (최신순/금액순)\\n\\n5. components/features/quotes/sync-button.tsx 생성:\\n   - 노션 동기화 버튼\\n   - 로딩 상태 표시\\n   - 마지막 동기화 시간 툴팁\\n\\n6. app/(dashboard)/quotes/page.tsx 생성:\\n   - 견적서 목록 페이지\\n   - 필터, 동기화 버튼, 견적서 목록 조합",
+      "verificationCriteria": "1. 견적서 카드가 더미 데이터로 렌더링\\n2. 공유 링크 복사 시 toast 표시\\n3. 검색 필터 UI가 정상 동작\\n4. 빈 상태일 때 EmptyState 표시\\n5. Playwright MCP로 목록 페이지 테스트",
+      "analysisResult": "노션 견적서 뷰어 MVP 개발 - ROADMAP.md 기반 순차적 구현. Phase 1 완료 상태에서 Phase 2부터 시작. 기존 코드 패턴(제네릭 타입, Zod 스키마, shadcn/ui)을 재사용하며, 각 Task 완료 후 다음 Task로 진행."
+    },
+    {
+      "id": "3e757c5b-82b9-4c56-ab7c-a1e92a5c0a6e",
+      "name": "Task 009: 견적서 상세 페이지 UI 구현",
+      "description": "견적서 상세 페이지 UI를 구현합니다. 견적서 헤더, 클라이언트 정보, 품목 테이블, 총합계, 비고 섹션과 PDF 다운로드 버튼을 포함합니다.",
+      "notes": "PDF 다운로드는 Phase 7에서 구현. 현재는 버튼만 표시하고 클릭 시 toast로 '준비 중' 메시지.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "56b4e503-5fb4-4549-a84d-75598168d4f3"
+        }
+      ],
+      "createdAt": "2025-12-31T04:21:21.088Z",
+      "updatedAt": "2025-12-31T04:21:21.088Z",
+      "relatedFiles": [
+        {
+          "path": "components/features/quotes/quote-header.tsx",
+          "type": "CREATE",
+          "description": "견적서 헤더 컴포넌트"
+        },
+        {
+          "path": "components/features/quotes/client-info.tsx",
+          "type": "CREATE",
+          "description": "클라이언트 정보 컴포넌트"
+        },
+        {
+          "path": "components/features/quotes/quote-items-table.tsx",
+          "type": "CREATE",
+          "description": "품목 테이블 컴포넌트"
+        },
+        {
+          "path": "components/features/quotes/quote-summary.tsx",
+          "type": "CREATE",
+          "description": "합계 및 비고 컴포넌트"
+        },
+        {
+          "path": "components/features/quotes/quote-detail.tsx",
+          "type": "CREATE",
+          "description": "견적서 상세 뷰 컴포넌트"
+        },
+        {
+          "path": "app/(dashboard)/quotes/[id]/page.tsx",
+          "type": "CREATE",
+          "description": "견적서 상세 페이지"
+        },
+        {
+          "path": "lib/mock-data.ts",
+          "type": "REFERENCE",
+          "description": "더미 데이터 참조"
+        }
+      ],
+      "implementationGuide": "1. components/features/quotes/quote-header.tsx 생성:\\n   - 회사 정보 표시\\n   - 견적서 번호, 작성일, 유효기간 표시\\n   - PDF 다운로드 버튼\\n   - 공유 링크 복사 버튼\\n\\n2. components/features/quotes/client-info.tsx 생성:\\n   - 클라이언트 회사명, 담당자, 연락처 표시\\n   - Card 컴포넌트 활용\\n\\n3. components/features/quotes/quote-items-table.tsx 생성:\\n   - 품목 테이블 (품목명, 수량, 단가, 금액)\\n   - Table 컴포넌트 또는 커스텀 테이블\\n   - 반응형 디자인 (모바일에서 카드 형태)\\n\\n4. components/features/quotes/quote-summary.tsx 생성:\\n   - 소계, 세금, 총합계 표시\\n   - 비고/특이사항 섹션\\n\\n5. components/features/quotes/quote-detail.tsx 생성:\\n   - 위 컴포넌트들을 조합한 상세 뷰\\n\\n6. app/(dashboard)/quotes/[id]/page.tsx 생성:\\n   - 동적 라우트 페이지\\n   - 더미 데이터로 견적서 상세 표시",
+      "verificationCriteria": "1. 견적서 상세 정보가 올바르게 표시\\n2. 품목 테이블이 정상 렌더링\\n3. 총합계가 정확히 계산됨\\n4. PDF 다운로드 버튼 클릭 시 toast 표시\\n5. Playwright MCP로 상세 페이지 테스트",
+      "analysisResult": "노션 견적서 뷰어 MVP 개발 - ROADMAP.md 기반 순차적 구현. Phase 1 완료 상태에서 Phase 2부터 시작. 기존 코드 패턴(제네릭 타입, Zod 스키마, shadcn/ui)을 재사용하며, 각 Task 완료 후 다음 Task로 진행."
+    },
+    {
+      "id": "18ba1ff9-a687-4519-9b33-1e921d98149d",
+      "name": "Task 010: 공유 견적서 페이지 UI 구현",
+      "description": "클라이언트가 공유 링크로 접근하는 공개 페이지 UI를 구현합니다. 인증 없이 접근 가능하며, 견적서 뷰어(읽기 전용)와 PDF 다운로드 버튼을 포함합니다.",
+      "notes": "실제 shareId 조회는 Phase 6에서 구현. 현재는 더미 데이터 사용. 존재하지 않는 shareId는 not-found.tsx로 처리.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "3e757c5b-82b9-4c56-ab7c-a1e92a5c0a6e"
+        }
+      ],
+      "createdAt": "2025-12-31T04:21:21.088Z",
+      "updatedAt": "2025-12-31T04:21:21.088Z",
+      "relatedFiles": [
+        {
+          "path": "app/quote/share/[shareId]/layout.tsx",
+          "type": "CREATE",
+          "description": "공유 페이지 레이아웃"
+        },
+        {
+          "path": "app/quote/share/[shareId]/page.tsx",
+          "type": "CREATE",
+          "description": "공유 견적서 페이지"
+        },
+        {
+          "path": "app/quote/share/[shareId]/not-found.tsx",
+          "type": "CREATE",
+          "description": "404 페이지"
+        },
+        {
+          "path": "components/features/quotes/shared-quote-viewer.tsx",
+          "type": "CREATE",
+          "description": "공유 견적서 뷰어"
+        },
+        {
+          "path": "components/features/quotes/quote-detail.tsx",
+          "type": "REFERENCE",
+          "description": "견적서 상세 컴포넌트 재사용"
+        }
+      ],
+      "implementationGuide": "1. app/quote/share/[shareId]/layout.tsx 생성:\\n   - 공개 페이지 전용 레이아웃\\n   - 간소화된 헤더 (로고만)\\n   - 푸터 (저작권 정보)\\n\\n2. app/quote/share/[shareId]/page.tsx 생성:\\n   - shareId 파라미터로 견적서 조회 (더미)\\n   - 존재하지 않는 경우 404 페이지\\n   - 견적서 뷰어 컴포넌트 렌더링\\n\\n3. components/features/quotes/shared-quote-viewer.tsx 생성:\\n   - 읽기 전용 견적서 뷰어\\n   - quote-detail.tsx 컴포넌트 재사용\\n   - 편집/공유 버튼 숨김\\n   - PDF 다운로드 버튼만 표시",
+      "verificationCriteria": "1. 공유 링크로 접근 시 견적서 표시\\n2. 인증 없이 접근 가능\\n3. 편집 관련 버튼 숨김\\n4. PDF 다운로드 버튼 표시\\n5. 잘못된 shareId 시 404 표시\\n6. Playwright MCP로 공유 페이지 테스트",
+      "analysisResult": "노션 견적서 뷰어 MVP 개발 - ROADMAP.md 기반 순차적 구현. Phase 1 완료 상태에서 Phase 2부터 시작. 기존 코드 패턴(제네릭 타입, Zod 스키마, shadcn/ui)을 재사용하며, 각 Task 완료 후 다음 Task로 진행."
+    },
+    {
+      "id": "92e74bea-fe30-4fd4-8282-a3e28383decb",
+      "name": "Task 011: 더미 데이터 및 Mock 유틸리티 작성",
+      "description": "개발 환경에서 사용할 견적서 더미 데이터 생성 유틸리티와 API Mock 데이터를 작성합니다.",
+      "notes": "Task 008에서 기본 mock-data.ts 생성. 이 Task에서 확장 및 정리.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "56b4e503-5fb4-4549-a84d-75598168d4f3"
+        }
+      ],
+      "createdAt": "2025-12-31T04:25:52.104Z",
+      "updatedAt": "2025-12-31T04:25:52.104Z",
+      "relatedFiles": [
+        {
+          "path": "lib/mock-data.ts",
+          "type": "TO_MODIFY",
+          "description": "더미 데이터 확장"
+        },
+        {
+          "path": "lib/mock-api.ts",
+          "type": "CREATE",
+          "description": "API Mock 함수"
+        }
+      ],
+      "implementationGuide": "1. lib/mock-data.ts 확장:\\n   - generateMockQuote() 함수\\n   - generateMockQuotes(count) 함수\\n   - 다양한 상태의 견적서 데이터\\n\\n2. lib/mock-api.ts 생성:\\n   - API 응답 Mock 함수들\\n   - 지연 시뮬레이션 (setTimeout)\\n\\n3. 개발 환경 전용 시딩 스크립트",
+      "verificationCriteria": "1. Mock 데이터가 Quote 타입과 일치\\n2. 다양한 상태의 테스트 데이터 생성 가능\\n3. API Mock 함수가 실제 API 시그니처와 일치",
+      "analysisResult": "노션 견적서 뷰어 MVP - Phase 4~8 추가. Phase 3 UI 완성 후 백엔드 인프라, 노션 연동, 견적서 API, PDF 생성, 테스트/배포 순으로 진행."
+    },
+    {
+      "id": "fe44b089-a28e-4fbe-9d99-99d32d5d9a91",
+      "name": "Task 012: Supabase 프로젝트 설정 및 테이블 생성",
+      "description": "Supabase 프로젝트를 연동하고 환경 변수를 설정합니다. Task 005에서 작성한 SQL 마이그레이션을 실행하여 테이블을 생성합니다.",
+      "notes": "Supabase 대시보드에서 프로젝트 생성 필요. 환경 변수는 .env.example에 템플릿 제공.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "baa5e2ae-3865-4591-98ff-8cfd9e936ac5"
+        }
+      ],
+      "createdAt": "2025-12-31T04:25:52.104Z",
+      "updatedAt": "2025-12-31T04:25:52.104Z",
+      "relatedFiles": [
+        {
+          "path": ".env.local",
+          "type": "CREATE",
+          "description": "환경 변수"
+        },
+        {
+          "path": ".env.example",
+          "type": "CREATE",
+          "description": "환경 변수 템플릿"
+        },
+        {
+          "path": "lib/supabase/client.ts",
+          "type": "CREATE",
+          "description": "Supabase 클라이언트"
+        },
+        {
+          "path": "lib/supabase/server.ts",
+          "type": "CREATE",
+          "description": "Supabase 서버 클라이언트"
+        }
+      ],
+      "implementationGuide": "1. Supabase 프로젝트 생성 및 연동\\n2. 환경 변수 설정 (.env.local):\\n   - NEXT_PUBLIC_SUPABASE_URL\\n   - NEXT_PUBLIC_SUPABASE_ANON_KEY\\n   - SUPABASE_SERVICE_ROLE_KEY\\n\\n3. @supabase/supabase-js 설치\\n4. lib/supabase/client.ts 생성 (브라우저용)\\n5. lib/supabase/server.ts 생성 (서버용)\\n6. SQL 마이그레이션 실행\\n7. RLS 정책 적용 확인",
+      "verificationCriteria": "1. Supabase 연결 성공\\n2. 테이블 생성 확인\\n3. RLS 정책 동작 확인\\n4. 환경 변수 로드 확인",
+      "analysisResult": "노션 견적서 뷰어 MVP - Phase 4~8 추가. Phase 3 UI 완성 후 백엔드 인프라, 노션 연동, 견적서 API, PDF 생성, 테스트/배포 순으로 진행."
+    },
+    {
+      "id": "8b1a94e1-464e-4785-89d6-e532338e339d",
+      "name": "Task 013: 인증 시스템 구현 (F010)",
+      "description": "Supabase Auth를 연동하여 회원가입/로그인/로그아웃 기능을 구현합니다. 보호된 라우트 미들웨어와 세션 관리를 포함합니다.",
+      "notes": "Playwright MCP로 인증 플로우 E2E 테스트 필수.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "fe44b089-a28e-4fbe-9d99-99d32d5d9a91"
+        },
+        {
+          "taskId": "25febe93-aa5c-420d-a0b2-b2bc56490941"
+        }
+      ],
+      "createdAt": "2025-12-31T04:25:52.104Z",
+      "updatedAt": "2025-12-31T04:25:52.104Z",
+      "relatedFiles": [
+        {
+          "path": "lib/supabase/auth.ts",
+          "type": "CREATE",
+          "description": "인증 유틸리티"
+        },
+        {
+          "path": "providers/auth-provider.tsx",
+          "type": "CREATE",
+          "description": "인증 Provider"
+        },
+        {
+          "path": "middleware.ts",
+          "type": "CREATE",
+          "description": "라우트 보호 미들웨어"
+        },
+        {
+          "path": "components/features/auth/login-form.tsx",
+          "type": "TO_MODIFY",
+          "description": "실제 Auth 연동"
+        }
+      ],
+      "implementationGuide": "1. Supabase Auth 설정\\n2. lib/supabase/auth.ts 생성:\\n   - signUp, signIn, signOut 함수\\n   - getSession, getUser 함수\\n\\n3. providers/auth-provider.tsx 생성:\\n   - 사용자 상태 Context\\n   - 세션 리스너\\n\\n4. middleware.ts 생성:\\n   - 보호된 라우트 체크\\n   - 인증되지 않은 사용자 리디렉션\\n\\n5. Task 006의 폼에 실제 Auth 연동\\n6. 로그아웃 버튼 연동",
+      "verificationCriteria": "1. 회원가입 성공 및 이메일 확인\\n2. 로그인/로그아웃 정상 동작\\n3. 보호된 라우트 접근 제어\\n4. Playwright E2E 테스트 통과",
+      "analysisResult": "노션 견적서 뷰어 MVP - Phase 4~8 추가. Phase 3 UI 완성 후 백엔드 인프라, 노션 연동, 견적서 API, PDF 생성, 테스트/배포 순으로 진행."
+    },
+    {
+      "id": "c0b76de2-b87b-4192-93df-3dc03c26e99b",
+      "name": "Task 014: 노션 API 클라이언트 설정",
+      "description": "@notionhq/client를 설정하고 노션 데이터베이스 쿼리 함수를 구현합니다. 페이지네이션 및 Rate Limit 처리를 포함합니다.",
+      "notes": "노션 API Rate Limit: 초당 3 requests. 캐싱 전략 고려.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "8098bb18-a2e9-4cb3-aa13-00d6e9f9dfe3"
+        }
+      ],
+      "createdAt": "2025-12-31T04:26:34.582Z",
+      "updatedAt": "2025-12-31T04:26:34.582Z",
+      "relatedFiles": [
+        {
+          "path": "lib/notion/client.ts",
+          "type": "CREATE",
+          "description": "노션 클라이언트"
+        },
+        {
+          "path": "lib/notion/queries.ts",
+          "type": "CREATE",
+          "description": "쿼리 함수"
+        },
+        {
+          "path": "lib/notion/rate-limit.ts",
+          "type": "CREATE",
+          "description": "Rate Limit 처리"
+        },
+        {
+          "path": "lib/notion/index.ts",
+          "type": "CREATE",
+          "description": "노션 유틸 export"
+        },
+        {
+          "path": "types/notion.ts",
+          "type": "REFERENCE",
+          "description": "노션 타입 참조"
+        }
+      ],
+      "implementationGuide": "1. @notionhq/client 설치\\n2. lib/notion/client.ts 생성:\\n   - Notion 클라이언트 초기화 함수\\n   - 사용자별 API 키로 클라이언트 생성\\n\\n3. lib/notion/queries.ts 생성:\\n   - queryDatabase() 함수\\n   - getPage() 함수\\n   - 페이지네이션 처리 (has_more, next_cursor)\\n\\n4. lib/notion/rate-limit.ts 생성:\\n   - Rate Limit 처리 (429 에러)\\n   - 재시도 로직 (exponential backoff)",
+      "verificationCriteria": "1. 노션 클라이언트 초기화 성공\\n2. 데이터베이스 쿼리 동작\\n3. 페이지네이션 처리 확인\\n4. Rate Limit 429 에러 처리",
+      "analysisResult": "Phase 5: 노션 연동 및 데이터 동기화 - @notionhq/client 설정, 설정 페이지 API 연결, 동기화 기능 구현"
+    },
+    {
+      "id": "f7cd0f42-7601-4075-88aa-12f1d814945f",
+      "name": "Task 015: 노션 연동 설정 페이지 구현 (F011)",
+      "description": "노션 API 키와 데이터베이스 ID를 저장하는 설정 API를 구현합니다. API 키 암호화 저장 및 연동 테스트 기능을 포함합니다.",
+      "notes": "Playwright MCP로 설정 저장/불러오기 테스트.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "c0b76de2-b87b-4192-93df-3dc03c26e99b"
+        },
+        {
+          "taskId": "8b1a94e1-464e-4785-89d6-e532338e339d"
+        },
+        {
+          "taskId": "11513fcf-71f9-4e59-84dc-a6665df5350a"
+        }
+      ],
+      "createdAt": "2025-12-31T04:26:34.582Z",
+      "updatedAt": "2025-12-31T04:26:34.582Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/settings/route.ts",
+          "type": "CREATE",
+          "description": "설정 API"
+        },
+        {
+          "path": "app/api/settings/test/route.ts",
+          "type": "CREATE",
+          "description": "연동 테스트 API"
+        },
+        {
+          "path": "components/features/settings/settings-form.tsx",
+          "type": "TO_MODIFY",
+          "description": "API 연동"
+        }
+      ],
+      "implementationGuide": "1. app/api/settings/route.ts 생성:\\n   - GET: 현재 설정 조회\\n   - POST: 설정 저장\\n   - API 키 암호화 (crypto)\\n\\n2. app/api/settings/test/route.ts 생성:\\n   - POST: 연동 테스트 API\\n   - 노션 DB 접근 가능 여부 확인\\n\\n3. Task 007의 settings-form.tsx 연동:\\n   - React Query mutation\\n   - 저장/테스트 버튼 연결\\n   - 성공/실패 toast 표시",
+      "verificationCriteria": "1. 설정 저장/조회 API 동작\\n2. API 키 암호화 저장 확인\\n3. 연동 테스트 성공/실패 처리\\n4. Playwright E2E 테스트 통과",
+      "analysisResult": "Phase 5: 노션 연동 및 데이터 동기화 - @notionhq/client 설정, 설정 페이지 API 연결, 동기화 기능 구현"
+    },
+    {
+      "id": "83250b66-342e-4805-bd52-f9a9c8851f02",
+      "name": "Task 016: 데이터 동기화 구현 (F012)",
+      "description": "노션 데이터베이스에서 견적서 데이터를 가져와 DB에 동기화하는 기능을 구현합니다.",
+      "notes": "Playwright MCP로 동기화 정합성 테스트.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "f7cd0f42-7601-4075-88aa-12f1d814945f"
+        }
+      ],
+      "createdAt": "2025-12-31T04:26:34.582Z",
+      "updatedAt": "2025-12-31T04:26:34.582Z",
+      "relatedFiles": [
+        {
+          "path": "lib/notion/mapper.ts",
+          "type": "CREATE",
+          "description": "데이터 매퍼"
+        },
+        {
+          "path": "app/api/sync/route.ts",
+          "type": "CREATE",
+          "description": "동기화 API"
+        },
+        {
+          "path": "lib/sync/status.ts",
+          "type": "CREATE",
+          "description": "동기화 상태 관리"
+        },
+        {
+          "path": "components/features/quotes/sync-button.tsx",
+          "type": "TO_MODIFY",
+          "description": "API 연동"
+        }
+      ],
+      "implementationGuide": "1. lib/notion/mapper.ts 생성:\\n   - 노션 페이지 속성 → Quote 모델 매핑\\n   - 날짜, 숫자, 텍스트 변환\\n\\n2. app/api/sync/route.ts 생성:\\n   - POST: 동기화 트리거\\n   - 노션 DB 전체 조회\\n   - 신규/수정/삭제 감지\\n   - DB upsert 처리\\n\\n3. lib/sync/status.ts 생성:\\n   - 동기화 상태 관리\\n   - 마지막 동기화 시간 저장\\n\\n4. Task 008의 sync-button 연동",
+      "verificationCriteria": "1. 노션 → DB 동기화 성공\\n2. 데이터 매핑 정확성\\n3. 중복 데이터 처리 (upsert)\\n4. Playwright 동기화 테스트 통과",
+      "analysisResult": "Phase 5: 노션 연동 및 데이터 동기화 - @notionhq/client 설정, 설정 페이지 API 연결, 동기화 기능 구현"
+    },
+    {
+      "id": "1f37dddb-8815-41f6-a20c-e4578260526a",
+      "name": "Task 017: 견적서 목록 조회 API 구현 (F001, F002)",
+      "description": "견적서 목록 조회 API를 구현하고 React Query와 연동합니다. 페이지네이션을 포함합니다.",
+      "notes": "Playwright MCP로 목록 조회 API 테스트.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "83250b66-342e-4805-bd52-f9a9c8851f02"
+        },
+        {
+          "taskId": "56b4e503-5fb4-4549-a84d-75598168d4f3"
+        }
+      ],
+      "createdAt": "2025-12-31T04:27:15.281Z",
+      "updatedAt": "2025-12-31T04:27:15.281Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/quotes/route.ts",
+          "type": "CREATE",
+          "description": "목록 API"
+        },
+        {
+          "path": "hooks/use-quotes.ts",
+          "type": "CREATE",
+          "description": "React Query 훅"
+        },
+        {
+          "path": "components/features/quotes/quote-list.tsx",
+          "type": "TO_MODIFY",
+          "description": "API 연동"
+        }
+      ],
+      "implementationGuide": "1. app/api/quotes/route.ts 생성:\\n   - GET: 견적서 목록 조회\\n   - 페이지네이션 (page, limit)\\n   - 사용자별 필터링 (RLS)\\n\\n2. hooks/use-quotes.ts 생성:\\n   - useQuotes() 훅 (React Query)\\n   - 캐싱, 리페칭 설정\\n\\n3. Task 008의 quote-list.tsx 연동:\\n   - 더미 데이터 → 실제 API 교체\\n   - 로딩/에러 상태 처리",
+      "verificationCriteria": "1. 목록 API 정상 응답\\n2. 페이지네이션 동작\\n3. React Query 캐싱 확인\\n4. Playwright 테스트 통과",
+      "analysisResult": "Phase 6: 견적서 핵심 기능 - 목록 API, 상세 API, 공유 링크, 공유 페이지 구현"
+    },
+    {
+      "id": "3f487801-ac18-488c-b5e9-43be011d8181",
+      "name": "Task 018: 견적서 상세 조회 구현 (F003)",
+      "description": "견적서 상세 조회 API를 구현합니다. 본인 견적서만 조회할 수 있도록 권한을 검증합니다.",
+      "notes": "Playwright MCP로 상세 조회 및 권한 테스트.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "1f37dddb-8815-41f6-a20c-e4578260526a"
+        },
+        {
+          "taskId": "3e757c5b-82b9-4c56-ab7c-a1e92a5c0a6e"
+        }
+      ],
+      "createdAt": "2025-12-31T04:27:15.281Z",
+      "updatedAt": "2025-12-31T04:27:15.281Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/quotes/[id]/route.ts",
+          "type": "CREATE",
+          "description": "상세 API"
+        },
+        {
+          "path": "hooks/use-quote.ts",
+          "type": "CREATE",
+          "description": "상세 조회 훅"
+        },
+        {
+          "path": "app/(dashboard)/quotes/[id]/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "API 연동"
+        }
+      ],
+      "implementationGuide": "1. app/api/quotes/[id]/route.ts 생성:\\n   - GET: 견적서 상세 조회\\n   - 권한 검증 (userId 일치)\\n\\n2. hooks/use-quote.ts 생성:\\n   - useQuote(id) 훅\\n\\n3. Task 009의 quote-detail 연동:\\n   - 더미 데이터 → 실제 API 교체",
+      "verificationCriteria": "1. 상세 API 정상 응답\\n2. 권한 검증 동작 (타인 견적서 403)\\n3. Playwright 테스트 통과",
+      "analysisResult": "Phase 6: 견적서 핵심 기능 - 목록 API, 상세 API, 공유 링크, 공유 페이지 구현"
+    },
+    {
+      "id": "5ab440d0-3a2b-420c-8161-10ed078596af",
+      "name": "Task 019: 공유 링크 생성 구현 (F005)",
+      "description": "UUID 기반 shareId를 생성하고 공유 링크 생성/재생성 API를 구현합니다.",
+      "notes": "Playwright MCP로 공유 링크 생성 및 접근 테스트.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "3f487801-ac18-488c-b5e9-43be011d8181"
+        }
+      ],
+      "createdAt": "2025-12-31T04:27:15.281Z",
+      "updatedAt": "2025-12-31T04:27:15.281Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/quotes/[id]/share/route.ts",
+          "type": "CREATE",
+          "description": "공유 링크 API"
+        },
+        {
+          "path": "lib/share.ts",
+          "type": "CREATE",
+          "description": "공유 URL 유틸"
+        },
+        {
+          "path": "components/features/quotes/quote-card.tsx",
+          "type": "TO_MODIFY",
+          "description": "공유 버튼 연동"
+        }
+      ],
+      "implementationGuide": "1. app/api/quotes/[id]/share/route.ts 생성:\\n   - POST: shareId 생성/재생성\\n   - UUID v4 사용\\n\\n2. lib/share.ts 생성:\\n   - generateShareUrl() 함수\\n   - 전체 URL 생성\\n\\n3. Task 008/009의 공유 버튼 연동:\\n   - 클립보드 복사 기능 실제 연결",
+      "verificationCriteria": "1. shareId 생성 성공\\n2. 재생성 시 기존 ID 교체\\n3. 클립보드 복사 동작\\n4. Playwright 테스트 통과",
+      "analysisResult": "Phase 6: 견적서 핵심 기능 - 목록 API, 상세 API, 공유 링크, 공유 페이지 구현"
+    },
+    {
+      "id": "89a5ceda-f62c-4a0b-8cb0-a3f3674e25d1",
+      "name": "Task 020: 공유 견적서 페이지 구현 (F003)",
+      "description": "shareId 기반 견적서 조회 API를 구현하고 공개 페이지에 연동합니다.",
+      "notes": "Playwright MCP로 공유 페이지 접근 테스트.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "5ab440d0-3a2b-420c-8161-10ed078596af"
+        },
+        {
+          "taskId": "18ba1ff9-a687-4519-9b33-1e921d98149d"
+        }
+      ],
+      "createdAt": "2025-12-31T04:27:15.281Z",
+      "updatedAt": "2025-12-31T04:27:15.281Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/quotes/share/[shareId]/route.ts",
+          "type": "CREATE",
+          "description": "공유 조회 API"
+        },
+        {
+          "path": "app/quote/share/[shareId]/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "API 연동"
+        }
+      ],
+      "implementationGuide": "1. app/api/quotes/share/[shareId]/route.ts 생성:\\n   - GET: shareId로 견적서 조회\\n   - 인증 불필요 (공개 API)\\n   - 존재하지 않으면 404\\n\\n2. Task 010의 공유 페이지 연동:\\n   - 더미 데이터 → 실제 API 교체\\n   - 404 처리",
+      "verificationCriteria": "1. shareId로 조회 성공\\n2. 잘못된 shareId 시 404\\n3. 인증 없이 접근 가능\\n4. Playwright 테스트 통과",
+      "analysisResult": "Phase 6: 견적서 핵심 기능 - 목록 API, 상세 API, 공유 링크, 공유 페이지 구현"
+    },
+    {
+      "id": "1fca5fe5-8865-4277-987b-57a457588033",
+      "name": "Task 021: PDF 템플릿 컴포넌트 작성",
+      "description": "react-pdf/renderer를 설정하고 견적서 PDF 레이아웃 컴포넌트를 작성합니다. 한글 폰트 임베딩을 포함합니다.",
+      "notes": "한글 폰트는 CDN 또는 public 폴더에서 로드. 폰트 파일 크기 주의.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "3e757c5b-82b9-4c56-ab7c-a1e92a5c0a6e"
+        }
+      ],
+      "createdAt": "2025-12-31T04:28:04.621Z",
+      "updatedAt": "2025-12-31T04:28:04.621Z",
+      "relatedFiles": [
+        {
+          "path": "lib/pdf/fonts.ts",
+          "type": "CREATE",
+          "description": "폰트 설정"
+        },
+        {
+          "path": "lib/pdf/styles.ts",
+          "type": "CREATE",
+          "description": "PDF 스타일"
+        },
+        {
+          "path": "components/pdf/quote-document.tsx",
+          "type": "CREATE",
+          "description": "PDF 템플릿"
+        },
+        {
+          "path": "components/pdf/index.ts",
+          "type": "CREATE",
+          "description": "PDF 컴포넌트 export"
+        }
+      ],
+      "implementationGuide": "1. @react-pdf/renderer 설치\\n2. lib/pdf/fonts.ts 생성:\\n   - 한글 폰트 등록 (Noto Sans KR 등)\\n   - Font.register() 설정\\n\\n3. components/pdf/quote-document.tsx 생성:\\n   - Document, Page 컴포넌트\\n   - 견적서 헤더 섹션\\n   - 클라이언트 정보 섹션\\n   - 품목 테이블\\n   - 합계 및 비고 섹션\\n\\n4. lib/pdf/styles.ts 생성:\\n   - StyleSheet 정의",
+      "verificationCriteria": "1. PDF 컴포넌트 렌더링 성공\\n2. 한글 폰트 정상 표시\\n3. 레이아웃이 웹 뷰와 일치",
+      "analysisResult": "Phase 7: PDF 생성 기능 - react-pdf/renderer 템플릿 및 다운로드. Phase 8: 테스트, 최적화, Vercel 배포"
+    },
+    {
+      "id": "9eb14668-1e7b-4034-a4f0-43d82c077bfb",
+      "name": "Task 022: PDF 다운로드 구현 (F004)",
+      "description": "PDF 생성 API를 구현하고 다운로드 버튼에 연동합니다. 공유 페이지에서도 PDF 다운로드를 지원합니다.",
+      "notes": "Playwright MCP로 PDF 생성 및 다운로드 테스트.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "1fca5fe5-8865-4277-987b-57a457588033"
+        },
+        {
+          "taskId": "89a5ceda-f62c-4a0b-8cb0-a3f3674e25d1"
+        }
+      ],
+      "createdAt": "2025-12-31T04:28:04.621Z",
+      "updatedAt": "2025-12-31T04:28:04.621Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/quotes/[id]/pdf/route.ts",
+          "type": "CREATE",
+          "description": "PDF API"
+        },
+        {
+          "path": "app/api/quotes/share/[shareId]/pdf/route.ts",
+          "type": "CREATE",
+          "description": "공유 PDF API"
+        },
+        {
+          "path": "hooks/use-pdf-download.ts",
+          "type": "CREATE",
+          "description": "다운로드 훅"
+        },
+        {
+          "path": "components/features/quotes/quote-header.tsx",
+          "type": "TO_MODIFY",
+          "description": "다운로드 버튼 연동"
+        }
+      ],
+      "implementationGuide": "1. app/api/quotes/[id]/pdf/route.ts 생성:\\n   - GET: PDF 생성 및 반환\\n   - renderToStream 사용\\n   - Content-Type: application/pdf\\n\\n2. app/api/quotes/share/[shareId]/pdf/route.ts 생성:\\n   - 공유 페이지용 PDF API\\n\\n3. hooks/use-pdf-download.ts 생성:\\n   - PDF 다운로드 훅\\n   - 로딩 상태 관리\\n\\n4. 다운로드 버튼 연동 (quote-header.tsx, shared-quote-viewer.tsx)",
+      "verificationCriteria": "1. PDF 다운로드 성공\\n2. 파일명 형식 (견적서_번호_날짜.pdf)\\n3. 공유 페이지 다운로드 동작\\n4. Playwright 테스트 통과",
+      "analysisResult": "Phase 7: PDF 생성 기능 - react-pdf/renderer 템플릿 및 다운로드. Phase 8: 테스트, 최적화, Vercel 배포"
+    },
+    {
+      "id": "2f49fd4a-2103-471a-b2e0-bdda62e6b285",
+      "name": "Task 023: 통합 테스트 및 E2E 테스트",
+      "description": "주요 사용자 플로우에 대한 E2E 테스트를 작성합니다. API 엔드포인트 통합 테스트를 포함합니다.",
+      "notes": "Playwright MCP를 활용한 전체 사용자 플로우 검증.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "9eb14668-1e7b-4034-a4f0-43d82c077bfb"
+        }
+      ],
+      "createdAt": "2025-12-31T04:28:04.621Z",
+      "updatedAt": "2025-12-31T04:28:04.621Z",
+      "relatedFiles": [
+        {
+          "path": "playwright.config.ts",
+          "type": "CREATE",
+          "description": "Playwright 설정"
+        },
+        {
+          "path": "e2e/auth.spec.ts",
+          "type": "CREATE",
+          "description": "인증 테스트"
+        },
+        {
+          "path": "e2e/quotes.spec.ts",
+          "type": "CREATE",
+          "description": "견적서 테스트"
+        },
+        {
+          "path": "e2e/share.spec.ts",
+          "type": "CREATE",
+          "description": "공유 테스트"
+        },
+        {
+          "path": "e2e/pdf.spec.ts",
+          "type": "CREATE",
+          "description": "PDF 테스트"
+        }
+      ],
+      "implementationGuide": "1. Playwright 설정 (playwright.config.ts)\\n2. e2e/auth.spec.ts: 인증 플로우 테스트\\n3. e2e/quotes.spec.ts: 견적서 CRUD 테스트\\n4. e2e/share.spec.ts: 공유 링크 테스트\\n5. e2e/pdf.spec.ts: PDF 다운로드 테스트\\n6. 테스트 유틸리티 및 fixtures 작성",
+      "verificationCriteria": "1. 모든 E2E 테스트 통과\\n2. 주요 사용자 시나리오 커버\\n3. 에러 케이스 테스트 포함",
+      "analysisResult": "Phase 7: PDF 생성 기능 - react-pdf/renderer 템플릿 및 다운로드. Phase 8: 테스트, 최적화, Vercel 배포"
+    },
+    {
+      "id": "6f054f09-24ba-4330-8b57-c5a57066bd00",
+      "name": "Task 024: 성능 최적화",
+      "description": "React Query 캐싱, 이미지/폰트 최적화, 코드 스플리팅을 적용합니다.",
+      "notes": "Lighthouse 성능 점수 80점 이상 목표.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "2f49fd4a-2103-471a-b2e0-bdda62e6b285"
+        }
+      ],
+      "createdAt": "2025-12-31T04:28:04.621Z",
+      "updatedAt": "2025-12-31T04:28:04.621Z",
+      "relatedFiles": [
+        {
+          "path": "providers/query-provider.tsx",
+          "type": "TO_MODIFY",
+          "description": "캐싱 최적화"
+        },
+        {
+          "path": "next.config.ts",
+          "type": "TO_MODIFY",
+          "description": "Next.js 최적화 설정"
+        }
+      ],
+      "implementationGuide": "1. React Query 캐싱 전략 최적화:\\n   - staleTime, cacheTime 조정\\n   - prefetching 적용\\n\\n2. 이미지 최적화:\\n   - next/image 활용\\n   - 폰트 최적화 (next/font)\\n\\n3. 번들 사이즈 최적화:\\n   - dynamic import\\n   - 불필요한 의존성 제거\\n\\n4. Skeleton UI 개선",
+      "verificationCriteria": "1. Lighthouse 성능 80점 이상\\n2. 번들 사이즈 감소\\n3. 초기 로딩 시간 개선",
+      "analysisResult": "Phase 7: PDF 생성 기능 - react-pdf/renderer 템플릿 및 다운로드. Phase 8: 테스트, 최적화, Vercel 배포"
+    },
+    {
+      "id": "840a827e-3399-4d06-91f7-5e0c437ff01f",
+      "name": "Task 025: Vercel 배포 및 프로덕션 설정",
+      "description": "Vercel에 프로젝트를 배포하고 프로덕션 환경을 설정합니다.",
+      "notes": "프로덕션 환경에서 실제 노션 DB 연동 확인.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "6f054f09-24ba-4330-8b57-c5a57066bd00"
+        }
+      ],
+      "createdAt": "2025-12-31T04:28:04.621Z",
+      "updatedAt": "2025-12-31T04:28:04.621Z",
+      "relatedFiles": [
+        {
+          "path": "vercel.json",
+          "type": "CREATE",
+          "description": "Vercel 설정 (선택)"
+        },
+        {
+          "path": ".env.production",
+          "type": "CREATE",
+          "description": "프로덕션 환경 변수 템플릿"
+        }
+      ],
+      "implementationGuide": "1. Vercel 프로젝트 생성 및 연결\\n2. 환경 변수 설정 (프로덕션):\\n   - Supabase URL/키\\n   - 기타 환경 변수\\n\\n3. 도메인 연결 (선택사항)\\n4. 실제 노션 데이터베이스 연동 테스트\\n5. 배포 후 스모크 테스트",
+      "verificationCriteria": "1. Vercel 배포 성공\\n2. 프로덕션 환경 변수 동작\\n3. 실제 노션 연동 테스트 통과\\n4. HTTPS 정상 동작",
+      "analysisResult": "Phase 7: PDF 생성 기능 - react-pdf/renderer 템플릿 및 다운로드. Phase 8: 테스트, 최적화, Vercel 배포"
+    }
+  ]
+}
