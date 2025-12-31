@@ -4,7 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **노션 견적서 뷰어**는 노션에서 작성한 견적서를 웹에서 확인하고 PDF로 다운로드할 수 있는 시스템입니다.
 
-상세 프로젝트 요구사항은 `@/docs/Prd.md`를 참조하세요.
+## Project Context
+
+- PRD 문서: @docs/PRD.md
+- 개발 로드맵: @docs/ROADMAP.md
 
 ## 개발 명령어
 
