@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 노션 견적서 뷰어
 
-## Getting Started
+노션에서 작성한 견적서를 클라이언트가 웹에서 확인하고 PDF로 다운로드할 수 있는 시스템입니다.
 
-First, run the development server:
+## 프로젝트 개요
+
+**목적**: 노션에서 작성한 견적서를 웹에서 확인하고 PDF로 다운로드할 수 있는 시스템
+**사용자**: 견적서를 발행하는 사업자와 견적서를 받아보는 클라이언트
+**개발 상태**: MVP 개발 중
+
+## 주요 페이지
+
+### 사업자용 (로그인 필요)
+
+1. **견적서 목록** (`/quotes`)
+   - 노션에서 동기화된 전체 견적서 목록 표시
+   - 공유 링크 생성 및 복사
+   - 노션 데이터 수동 동기화
+
+2. **견적서 상세** (`/quotes/[id]`)
+   - 특정 견적서의 전체 내용 확인
+   - PDF 다운로드
+   - 공유 링크 복사
+
+3. **설정** (`/settings`)
+   - 노션 API 키 및 데이터베이스 ID 설정
+   - 연동 상태 확인
+
+### 클라이언트용 (인증 불필요)
+
+1. **공유 견적서** (`/quote/share/[shareId]`)
+   - 공유 링크로 견적서 확인
+   - PDF 다운로드
+
+### 인증 페이지
+
+- **로그인** (`/login`) - 사업자 로그인
+- **회원가입** (`/register`) - 사업자 계정 생성
+
+## 핵심 기능
+
+- **노션 API 연동** - 노션 데이터베이스에서 견적서 데이터 자동 동기화
+- **견적서 조회** - 발행된 견적서 목록 및 상세 내용 확인
+- **공유 링크** - 클라이언트가 접근할 수 있는 고유 URL 생성
+- **PDF 다운로드** - 견적서를 PDF 파일로 변환 및 다운로드
+- **기본 인증** - 사업자용 회원가입/로그인/로그아웃
+
+## 기술 스택
+
+### 프론트엔드 프레임워크
+- **Next.js 16** (App Router) - React 풀스택 프레임워크
+- **TypeScript 5.6+** - 타입 안전성 보장
+- **React 19** - UI 라이브러리
+
+### 스타일링 & UI
+- **TailwindCSS v4** - 유틸리티 CSS 프레임워크
+- **shadcn/ui** - 고품질 React 컴포넌트 라이브러리
+- **Lucide React** - 아이콘 라이브러리
+
+### 폼 & 검증
+- **React Hook Form 7.x** - 폼 상태 관리
+- **Zod** - 스키마 검증 라이브러리
+
+### 백엔드 & 데이터베이스 (예정)
+- **Supabase** - BaaS (인증, 데이터베이스)
+- **PostgreSQL** - 관계형 데이터베이스
+
+### 외부 연동 (예정)
+- **@notionhq/client** - Notion API 공식 SDK
+- **react-pdf/renderer** - React 컴포넌트로 PDF 생성
+
+## 시작하기
+
+### 의존성 설치
+
+```bash
+npm install
+```
+
+### 개발 서버 실행
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인하세요.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 빌드
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+### 프로덕션 서버 실행
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 개발 상태
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- ✅ 기본 프로젝트 구조 설정
+- ✅ 페이지 레이아웃 및 라우팅 구성
+- ⏳ Supabase 연동 및 인증 구현
+- ⏳ 노션 API 연동
+- ⏳ 견적서 데이터 동기화
+- ⏳ PDF 생성 기능
 
-## Deploy on Vercel
+## 문서
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [PRD 문서](./docs/Prd.md) - 상세 요구사항 및 기능 명세
+- [개발 가이드](./CLAUDE.md) - Claude Code를 위한 개발 지침
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 배포
+
+Vercel을 통한 배포를 권장합니다.
+
+자세한 내용은 [Next.js 배포 문서](https://nextjs.org/docs/app/building-your-application/deploying)를 참조하세요.

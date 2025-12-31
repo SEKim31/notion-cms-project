@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**노션 견적서 뷰어**는 노션에서 작성한 견적서를 웹에서 확인하고 PDF로 다운로드할 수 있는 시스템입니다.
+
+상세 프로젝트 요구사항은 `@/docs/Prd.md`를 참조하세요.
+
 ## 개발 명령어
 
 ```bash
@@ -13,14 +17,15 @@ npm run lint     # ESLint 검사
 
 ## 프로젝트 개요
 
-Next.js 16 + React 19 기반 모던 웹 스타터킷. shadcn/ui 컴포넌트 라이브러리와 Tailwind CSS 4.x를 사용하며, 마케팅 페이지와 대시보드가 분리된 구조.
+노션 견적서 뷰어 MVP - Next.js 16 + React 19 기반. 노션 API 연동으로 견적서를 동기화하고, 클라이언트와 공유 가능한 링크 생성 및 PDF 다운로드 기능 제공.
 
 ## 아키텍처
 
 ### 라우팅 (App Router + Route Groups)
-- `app/(marketing)/` - 마케팅 페이지 (홈, 기능, 가격, 소개 등)
+- `app/(marketing)/` - 마케팅 페이지 (홈 랜딩)
 - `app/(auth)/` - 인증 페이지 (로그인, 회원가입)
-- `app/(dashboard)/` - 대시보드 (사이드바 레이아웃)
+- `app/(dashboard)/` - 대시보드 (견적서 목록, 상세, 설정)
+- `app/quote/share/[shareId]/` - 공유 견적서 (공개 페이지)
 
 ### 컴포넌트 구조
 - `components/ui/` - shadcn/ui 기본 컴포넌트

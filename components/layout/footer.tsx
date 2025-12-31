@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Github, Twitter } from "lucide-react"
+import { Github } from "lucide-react"
 import { Logo, ThemeToggle } from "@/components/common"
 import { footerNav } from "@/config/navigation"
 import { siteConfig } from "@/config/site"
@@ -14,7 +14,7 @@ export function Footer({ className }: FooterProps) {
   return (
     <footer className={cn("border-t bg-background", className)}>
       <div className="container py-12">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {/* 로고 및 설명 */}
           <div className="space-y-4">
             <Logo />
@@ -31,56 +31,7 @@ export function Footer({ className }: FooterProps) {
                 <Github className="h-5 w-5" />
                 <span className="sr-only">GitHub</span>
               </Link>
-              <Link
-                href={siteConfig.links.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <Twitter className="h-5 w-5" />
-                <span className="sr-only">Twitter</span>
-              </Link>
             </div>
-          </div>
-
-          {/* 제품 링크 */}
-          <div>
-            <h3 className="mb-4 text-sm font-semibold">제품</h3>
-            <ul className="space-y-3">
-              {footerNav.product.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      "text-sm text-muted-foreground hover:text-foreground",
-                      item.disabled && "pointer-events-none opacity-50"
-                    )}
-                  >
-                    {item.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* 회사 링크 */}
-          <div>
-            <h3 className="mb-4 text-sm font-semibold">회사</h3>
-            <ul className="space-y-3">
-              {footerNav.company.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      "text-sm text-muted-foreground hover:text-foreground",
-                      item.disabled && "pointer-events-none opacity-50"
-                    )}
-                  >
-                    {item.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
 
           {/* 법적 링크 */}
