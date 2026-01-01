@@ -62,15 +62,15 @@
 
 ---
 
-### Phase 2: 타입 정의 및 데이터 모델 설계
+### Phase 2: 타입 정의 및 데이터 모델 설계 - 완료
 
-- **Task 004: 타입 정의 및 인터페이스 설계** - 우선순위
+- **Task 004: 타입 정의 및 인터페이스 설계** - 완료
   - See: `/tasks/004-type-definitions.md`
   - TypeScript 인터페이스 정의 (User, Quote, QuoteItem)
   - API 응답 타입 및 폼 데이터 타입 정의
   - 노션 API 응답 타입 매핑
 
-- **Task 005: 데이터베이스 스키마 설계**
+- **Task 005: 데이터베이스 스키마 설계** - 완료
   - See: `/tasks/005-database-schema.md`
   - Supabase 테이블 스키마 설계 (users, quotes)
   - 관계 및 인덱스 정의
@@ -78,28 +78,28 @@
 
 ---
 
-### Phase 3: UI/UX 완성 (더미 데이터 활용)
+### Phase 3: UI/UX 완성 (더미 데이터 활용) - 완료
 
-- **Task 006: 인증 페이지 UI 구현**
+- **Task 006: 인증 페이지 UI 구현** - 완료
   - See: `/tasks/006-auth-pages-ui.md`
   - 로그인 페이지 폼 및 레이아웃 완성
   - 회원가입 페이지 폼 및 유효성 검사 UI
   - 인증 관련 에러 메시지 표시 UI
 
-- **Task 007: 대시보드 레이아웃 및 설정 페이지 UI**
+- **Task 007: 대시보드 레이아웃 및 설정 페이지 UI** - 완료
   - See: `/tasks/007-dashboard-settings-ui.md`
   - 대시보드 사이드바 네비게이션 완성
   - 설정 페이지 UI (노션 API 키, 데이터베이스 ID 입력 폼)
   - 연동 상태 표시 컴포넌트
 
-- **Task 008: 견적서 목록 페이지 UI 구현**
+- **Task 008: 견적서 목록 페이지 UI 구현** - 완료
   - See: `/tasks/008-quote-list-ui.md`
   - 견적서 카드 목록 컴포넌트 (더미 데이터)
   - 검색 및 필터링 UI
   - 동기화 버튼 및 상태 표시
   - 공유 링크 복사 버튼
 
-- **Task 009: 견적서 상세 페이지 UI 구현**
+- **Task 009: 견적서 상세 페이지 UI 구현** - 완료
   - See: `/tasks/009-quote-detail-ui.md`
   - 견적서 헤더 (회사 정보, 견적서 번호, 날짜)
   - 클라이언트 정보 섹션
@@ -107,29 +107,29 @@
   - 총합계 및 비고 섹션
   - PDF 다운로드 버튼 UI
 
-- **Task 010: 공유 견적서 페이지 UI 구현**
+- **Task 010: 공유 견적서 페이지 UI 구현** - 완료
   - See: `/tasks/010-shared-quote-ui.md`
   - 공개 페이지 전용 레이아웃
   - 견적서 뷰어 컴포넌트 (읽기 전용)
   - PDF 다운로드 버튼
 
-- **Task 011: 더미 데이터 및 Mock 유틸리티 작성**
+- **Task 011: 더미 데이터 및 Mock 유틸리티 작성** - 완료
   - See: `/tasks/011-mock-data.md`
-  - 견적서 더미 데이터 생성 유틸리티
-  - API 응답 Mock 데이터
-  - 개발 환경 전용 시딩 스크립트
+  - 견적서 더미 데이터 생성 유틸리티 (`lib/mock/quotes.ts`)
+  - 포맷팅 유틸리티 (금액, 날짜, 상태)
+  - 5개 샘플 견적서 데이터
 
 ---
 
-### Phase 4: 백엔드 인프라 및 인증 구현
+### Phase 4: 백엔드 인프라 및 인증 구현 - 완료
 
-- **Task 012: Supabase 프로젝트 설정 및 테이블 생성**
+- **Task 012: Supabase 프로젝트 설정 및 테이블 생성** - 완료
   - See: `/tasks/012-supabase-setup.md`
   - Supabase 프로젝트 연동 및 환경 변수 설정
   - users, quotes 테이블 생성 (SQL 마이그레이션)
   - RLS 정책 적용
 
-- **Task 013: 인증 시스템 구현 (F010)**
+- **Task 013: 인증 시스템 구현 (F010)** - 완료
   - See: `/tasks/013-authentication.md`
   - Supabase Auth 연동
   - 회원가입/로그인/로그아웃 API 연결
@@ -139,23 +139,23 @@
 
 ---
 
-### Phase 5: 노션 연동 및 데이터 동기화
+### Phase 5: 노션 연동 및 데이터 동기화 - 진행중
 
-- **Task 014: 노션 API 클라이언트 설정**
+- **Task 014: 노션 API 클라이언트 설정** - 완료
   - See: `/tasks/014-notion-client.md`
   - @notionhq/client 설정 및 유틸리티 함수
   - 노션 데이터베이스 쿼리 함수 구현
   - 페이지네이션 및 Rate Limit 처리
 
-- **Task 015: 노션 연동 설정 페이지 구현 (F011)**
+- **Task 015: 노션 연동 설정 페이지 구현 (F011)** - 완료
   - See: `/tasks/015-notion-settings.md`
   - API 키 암호화 저장 로직
   - 데이터베이스 ID 저장 및 검증
   - 연동 테스트 API 엔드포인트
   - 설정 저장 API 연결
-  - **테스트 체크리스트**: Playwright MCP를 활용한 설정 저장/불러오기 테스트
+  - **테스트 체크리스트**: Playwright MCP를 활용한 설정 저장/불러오기 테스트 ✅
 
-- **Task 016: 데이터 동기화 구현 (F012)**
+- **Task 016: 데이터 동기화 구현 (F012)** - 우선순위
   - See: `/tasks/016-data-sync.md`
   - 노션 → DB 동기화 API 엔드포인트
   - 노션 페이지 속성 → Quote 모델 매핑
