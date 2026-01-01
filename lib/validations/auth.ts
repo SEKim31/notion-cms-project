@@ -21,6 +21,10 @@ export const registerSchema = z
       .string()
       .min(1, "이름을 입력해주세요.")
       .min(2, "이름은 2자 이상이어야 합니다."),
+    companyName: z
+      .string()
+      .min(1, "회사명/사업자명을 입력해주세요.")
+      .min(2, "회사명은 2자 이상이어야 합니다."),
     email: z
       .string()
       .min(1, "이메일을 입력해주세요.")

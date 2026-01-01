@@ -14,31 +14,44 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAuth } from "@/hooks/use-auth"
 
-// 임시 사용자 정보
-const user = {
-  name: "홍길동",
-  email: "hong@example.com",
-  image: "",
-}
-
-// 사용자 네비게이션 컴포넌트
-// Avatar + Dropdown 메뉴
+/**
+ * 사용자 네비게이션 컴포넌트
+ * Avatar + Dropdown 메뉴
+ * 로그인된 사용자 정보 표시 및 로그아웃 기능
+ */
 export function UserNav() {
+  const { user, logout } = useAuth()
+
+  if (!user) {
+    return null
+  }
+
+  // 이메일에서 이니셜 추출 (회사명이 있으면 회사명 사용)
+  const getInitials = () => {
+    if (user.companyName) {
+      return user.companyName.slice(0, 2).toUpperCase()
+    }
+    return user.email.slice(0, 2).toUpperCase()
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={user.image} alt={user.name} />
-            <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
+            <AvatarImage src="" alt={user.companyName || user.email} />
+            <AvatarFallback>{getInitials()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-sm font-medium leading-none">
+              {user.companyName || "사용자"}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
@@ -47,9 +60,9 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/dashboard">
+            <Link href="/quotes">
               <User className="mr-2 h-4 w-4" />
-              <span>프로필</span>
+              <span>견적서 목록</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
@@ -60,12 +73,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
-            // TODO: 로그아웃 처리
-            console.log("로그아웃")
-          }}
-        >
+        <DropdownMenuItem onClick={logout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>로그아웃</span>
         </DropdownMenuItem>

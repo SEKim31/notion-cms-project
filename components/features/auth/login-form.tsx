@@ -4,7 +4,8 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
-import { toast } from "sonner"
+
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,10 +18,12 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth"
+import { useAuth } from "@/hooks/use-auth"
 
 // 로그인 폼 컴포넌트
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
+  const { login } = useAuth()
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -34,22 +37,10 @@ export function LoginForm() {
     setIsLoading(true)
 
     try {
-      // TODO: 실제 로그인 API 호출
-      console.log("로그인 데이터:", data)
-
-      // 임시 딜레이 (API 시뮬레이션)
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      toast.success("로그인 성공", {
-        description: "환영합니다!",
-      })
-
-      // TODO: 로그인 성공 후 리다이렉트
-      // router.push("/dashboard")
-    } catch {
-      toast.error("로그인 실패", {
-        description: "이메일 또는 비밀번호를 확인해주세요.",
-      })
+      await login(data.email, data.password)
+    } catch (error) {
+      // useAuth의 login 함수에서 에러 토스트 처리됨
+      console.error("로그인 에러:", error)
     } finally {
       setIsLoading(false)
     }
@@ -81,7 +72,15 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>비밀번호</FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel>비밀번호</FormLabel>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-muted-foreground hover:text-primary hover:underline"
+                >
+                  비밀번호를 잊으셨나요?
+                </Link>
+              </div>
               <FormControl>
                 <Input
                   type="password"

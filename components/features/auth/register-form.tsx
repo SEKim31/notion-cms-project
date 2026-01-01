@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
-import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,15 +16,18 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { registerSchema, type RegisterFormData } from "@/lib/validations/auth"
+import { useAuth } from "@/hooks/use-auth"
 
 // 회원가입 폼 컴포넌트
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false)
+  const { register: registerUser } = useAuth()
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
+      companyName: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -36,22 +38,15 @@ export function RegisterForm() {
     setIsLoading(true)
 
     try {
-      // TODO: 실제 회원가입 API 호출
-      console.log("회원가입 데이터:", data)
-
-      // 임시 딜레이 (API 시뮬레이션)
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      toast.success("회원가입 성공", {
-        description: "계정이 생성되었습니다. 로그인해주세요.",
+      await registerUser({
+        email: data.email,
+        password: data.password,
+        companyName: data.companyName,
+        name: data.name,
       })
-
-      // TODO: 회원가입 성공 후 리다이렉트
-      // router.push("/login")
-    } catch {
-      toast.error("회원가입 실패", {
-        description: "다시 시도해주세요.",
-      })
+    } catch (error) {
+      // useAuth의 register 함수에서 에러 토스트 처리됨
+      console.error("회원가입 에러:", error)
     } finally {
       setIsLoading(false)
     }
@@ -69,6 +64,23 @@ export function RegisterForm() {
               <FormControl>
                 <Input
                   placeholder="홍길동"
+                  disabled={isLoading}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="companyName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>회사명/사업자명</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="주식회사 OOO"
                   disabled={isLoading}
                   {...field}
                 />
