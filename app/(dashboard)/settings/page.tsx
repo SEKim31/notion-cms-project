@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { NotionSettingsSection } from "./notion-settings-section"
 
 export const metadata: Metadata = {
   title: "설정",
@@ -31,6 +32,9 @@ export default function SettingsPage() {
         </div>
 
         <Separator />
+
+        {/* 노션 연동 설정 */}
+        <NotionSettingsSection />
 
         {/* 프로필 설정 */}
         <Card>
