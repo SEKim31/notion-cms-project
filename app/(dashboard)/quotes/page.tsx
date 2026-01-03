@@ -2,26 +2,39 @@
 
 import Link from "next/link"
 import { Settings } from "lucide-react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/common/page-header"
 import { QuoteList } from "@/components/features/quotes"
 import { getMockQuoteSummaries } from "@/lib/mock/quotes"
+import { useSyncData } from "@/hooks/use-sync"
 
 // 견적서 목록 페이지
 export default function QuotesPage() {
-  // TODO: 실제 데이터는 Supabase에서 가져오기 (React Query 사용)
+  // 동기화 상태 및 액션
+  const { isConnected, lastSyncAt, isSyncing, syncAsync, refetch } = useSyncData()
+
+  // TODO: 실제 데이터는 Supabase에서 가져오기 (Task 017에서 구현 예정)
   // 현재는 더미 데이터 사용
   const quotes = getMockQuoteSummaries()
 
-  // TODO: 실제 연동 상태는 사용자 설정에서 가져오기
-  const isConnected = true
-  const lastSyncTime = new Date()
-
-  // 동기화 핸들러 (TODO: 실제 API 연동)
+  // 동기화 핸들러 (실제 API 연동)
   const handleSync = async () => {
-    // 더미 동기화 - 1초 대기
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const result = await syncAsync(false)
+      if (result.success) {
+        toast.success(result.message)
+      } else {
+        toast.error(result.message || "동기화에 실패했습니다.")
+      }
+      // 동기화 후 상태 새로고침
+      await refetch()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "동기화에 실패했습니다."
+      toast.error(message)
+      throw error // QuoteListToolbar에서 에러 처리하도록 전파
+    }
   }
 
   return (
@@ -40,9 +53,9 @@ export default function QuotesPage() {
 
       <QuoteList
         quotes={quotes}
-        isLoading={false}
+        isLoading={isSyncing}
         isConnected={isConnected}
-        lastSyncTime={lastSyncTime}
+        lastSyncTime={lastSyncAt}
         onSync={handleSync}
       />
     </div>

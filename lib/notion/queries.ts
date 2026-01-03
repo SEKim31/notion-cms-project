@@ -87,7 +87,7 @@ export async function queryAllPages(
   databaseId: string,
   options?: NotionSyncOptions
 ): Promise<AllPagesResult> {
-  const allPages: QueryDataSourceResponse["results"] = []
+  const allPages: QueryDatabaseResponse["results"] = []
   let cursor: string | undefined = options?.startCursor
   let hasMore = true
 

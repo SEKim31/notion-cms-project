@@ -2,7 +2,7 @@
 // 노션 속성 값 추출 유틸리티
 
 import type {
-  QueryDataSourceResponse,
+  QueryDatabaseResponse,
   PageObjectResponse,
 } from "@notionhq/client/build/src/api-endpoints"
 import type {
@@ -199,7 +199,7 @@ export function mapNotionPageToQuote(
  * @returns Quote 생성 입력 데이터 목록
  */
 export function mapNotionPagesToQuotes(
-  pages: QueryDataSourceResponse["results"],
+  pages: QueryDatabaseResponse["results"],
   userId: string,
   mapping?: NotionQuoteMapping
 ): CreateQuoteInput[] {
