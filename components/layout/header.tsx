@@ -20,30 +20,30 @@ export function Header({
   return (
     <header
       className={cn(
-        "z-50 w-full border-b",
+        "z-50 w-full border-b transition-all duration-300",
         sticky && "sticky top-0",
         transparent
           ? "border-transparent bg-transparent"
-          : "border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+          : "border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60",
         className
       )}
     >
       <div className="container flex h-16 items-center justify-between">
         {/* 좌측: 로고 + 네비게이션 */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-8">
           <MobileNav />
           <Logo />
           <MainNav />
         </div>
 
         {/* 우측: 테마 토글 + 로그인/회원가입 */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <ThemeToggle />
           <div className="hidden items-center gap-2 sm:flex">
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" size="sm" asChild>
               <Link href="/login">로그인</Link>
             </Button>
-            <Button asChild>
+            <Button size="sm" className="rounded-full px-4" asChild>
               <Link href="/register">시작하기</Link>
             </Button>
           </div>
