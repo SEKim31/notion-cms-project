@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 
 import { PageHeader } from "@/components/common/page-header"
 import {
@@ -8,23 +8,74 @@ import {
   QuoteNotesCard,
   QuoteActions,
 } from "@/components/features/quotes"
-import { getMockQuoteById } from "@/lib/mock/quotes"
-import type { PageParams } from "@/types"
+import { createClient } from "@/lib/supabase/server"
+import type { PageParams, Quote, QuoteItem, QuoteStatus } from "@/types"
 
 // 견적서 상세 페이지 (사업자용)
 export default async function QuoteDetailPage({ params }: PageParams) {
   const { id } = await params
+  const supabase = await createClient()
 
-  // TODO: 실제 데이터는 Supabase에서 가져오기
-  // 현재는 더미 데이터 사용
-  const quote = getMockQuoteById(id)
+  // 현재 로그인한 사용자 확인
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  if (!quote) {
+  if (!user) {
+    redirect("/login")
+  }
+
+  // UUID 형식 검증
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (!uuidRegex.test(id)) {
     notFound()
   }
 
-  // TODO: 사업자 정보는 세션에서 가져오기
-  const companyName = "테크 솔루션즈"
+  // 견적서 조회
+  const { data: quoteData, error: quoteError } = await supabase
+    .from("quotes")
+    .select("*")
+    .eq("id", id)
+    .single()
+
+  if (quoteError || !quoteData) {
+    notFound()
+  }
+
+  // 권한 검증: 본인 소유 견적서만 조회 가능
+  if (quoteData.user_id !== user.id) {
+    notFound()
+  }
+
+  // 사용자 회사명 조회
+  const { data: userData } = await supabase
+    .from("users")
+    .select("company_name")
+    .eq("id", user.id)
+    .single()
+
+  // DB 컬럼명 → 타입 필드명 변환
+  const quote: Quote = {
+    id: quoteData.id,
+    userId: quoteData.user_id,
+    notionPageId: quoteData.notion_page_id,
+    quoteNumber: quoteData.quote_number,
+    clientName: quoteData.client_name,
+    clientContact: quoteData.client_contact,
+    clientPhone: quoteData.client_phone,
+    clientEmail: quoteData.client_email,
+    items: (quoteData.items || []) as QuoteItem[],
+    totalAmount: quoteData.total_amount,
+    issueDate: new Date(quoteData.issue_date),
+    validUntil: quoteData.valid_until ? new Date(quoteData.valid_until) : null,
+    notes: quoteData.notes,
+    shareId: quoteData.share_id,
+    status: quoteData.status as QuoteStatus,
+    createdAt: new Date(quoteData.created_at),
+    updatedAt: new Date(quoteData.updated_at),
+  }
+
+  const companyName = userData?.company_name || ""
 
   return (
     <div className="flex flex-col gap-8">
@@ -32,7 +83,11 @@ export default async function QuoteDetailPage({ params }: PageParams) {
         title="견적서 상세"
         description={`${quote.quoteNumber} - ${quote.clientName}`}
       >
-        <QuoteActions quoteId={quote.id} shareId={quote.shareId} />
+        <QuoteActions
+          quoteId={quote.id}
+          shareId={quote.shareId}
+          quoteNumber={quote.quoteNumber}
+        />
       </PageHeader>
 
       <div className="grid gap-6">

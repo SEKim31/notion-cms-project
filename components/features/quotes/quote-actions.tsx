@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Download, Link2, Loader2, ExternalLink } from "lucide-react"
+import { ArrowLeft, Download, Link2, Loader2, ExternalLink, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -12,53 +12,66 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useRegenerateShareLink, copyShareLinkToClipboard } from "@/hooks/use-share"
+import { usePdfDownload, useSharedPdfDownload } from "@/hooks/use-pdf"
 
 interface QuoteActionsProps {
   quoteId: string
   shareId: string
+  quoteNumber: string
   showBackButton?: boolean
 }
 
-// 견적서 액션 버튼 컴포넌트 (PDF 다운로드, 공유 링크 복사)
+// 견적서 액션 버튼 컴포넌트 (PDF 다운로드, 공유 링크 복사, 재생성)
 export function QuoteActions({
   quoteId,
-  shareId,
+  shareId: initialShareId,
+  quoteNumber,
   showBackButton = true,
 }: QuoteActionsProps) {
-  const [isDownloading, setIsDownloading] = useState(false)
+  const [currentShareId, setCurrentShareId] = useState(initialShareId)
+  const regenerateMutation = useRegenerateShareLink()
+  const { isDownloading, download: downloadPdf } = usePdfDownload()
 
   // 공유 링크 복사
   const handleCopyShareLink = async () => {
-    const shareUrl = `${window.location.origin}/quote/share/${shareId}`
-    try {
-      await navigator.clipboard.writeText(shareUrl)
+    const success = await copyShareLinkToClipboard(currentShareId)
+    if (success) {
       toast.success("공유 링크가 클립보드에 복사되었습니다.")
-    } catch (err) {
+    } else {
       toast.error("링크 복사에 실패했습니다.")
     }
   }
 
-  // PDF 다운로드 (TODO: 실제 API 연동)
-  const handleDownloadPdf = async () => {
-    setIsDownloading(true)
+  // 공유 링크 재생성
+  const handleRegenerateShareLink = async () => {
     try {
-      // TODO: 실제 PDF 생성 API 호출
-      // const response = await fetch(`/api/quotes/${quoteId}/pdf`)
-      // const blob = await response.blob()
-      // const url = window.URL.createObjectURL(blob)
-      // const a = document.createElement("a")
-      // a.href = url
-      // a.download = `quote-${quoteId}.pdf`
-      // a.click()
-      // window.URL.revokeObjectURL(url)
+      const result = await regenerateMutation.mutateAsync(quoteId)
+      setCurrentShareId(result.shareId)
+      toast.success("공유 링크가 재생성되었습니다. 기존 링크는 더 이상 유효하지 않습니다.")
+    } catch (error) {
+      toast.error("공유 링크 재생성에 실패했습니다.")
+    }
+  }
 
-      // 더미 다운로드 (2초 대기)
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+  // PDF 다운로드
+  const handleDownloadPdf = async () => {
+    const result = await downloadPdf(quoteId, quoteNumber)
+    if (result.success) {
       toast.success("PDF 다운로드가 완료되었습니다.")
-    } catch (err) {
-      toast.error("PDF 다운로드에 실패했습니다. 다시 시도해주세요.")
-    } finally {
-      setIsDownloading(false)
+    } else {
+      toast.error(result.error || "PDF 다운로드에 실패했습니다. 다시 시도해주세요.")
     }
   }
 
@@ -88,12 +101,52 @@ export function QuoteActions({
           </TooltipContent>
         </Tooltip>
 
+        {/* 공유 링크 재생성 버튼 */}
+        <AlertDialog>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={regenerateMutation.isPending}
+                >
+                  {regenerateMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                  <span className="sr-only">공유 링크 재생성</span>
+                </Button>
+              </AlertDialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>공유 링크를 재생성합니다 (기존 링크 무효화)</p>
+            </TooltipContent>
+          </Tooltip>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>공유 링크를 재생성하시겠습니까?</AlertDialogTitle>
+              <AlertDialogDescription>
+                새로운 공유 링크가 생성되며, 기존에 공유된 링크는 더 이상 유효하지 않게 됩니다.
+                클라이언트에게 새 링크를 다시 전달해야 합니다.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>취소</AlertDialogCancel>
+              <AlertDialogAction onClick={handleRegenerateShareLink}>
+                재생성
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {/* 공유 페이지 열기 */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="outline" size="icon" asChild>
               <Link
-                href={`/quote/share/${shareId}`}
+                href={`/quote/share/${currentShareId}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -128,27 +181,23 @@ export function QuoteActions({
 
 // 공유 페이지용 액션 버튼 (PDF 다운로드만)
 interface SharedQuoteActionsProps {
-  quoteId: string
+  shareId: string
   quoteNumber: string
 }
 
 export function SharedQuoteActions({
-  quoteId,
+  shareId,
   quoteNumber,
 }: SharedQuoteActionsProps) {
-  const [isDownloading, setIsDownloading] = useState(false)
+  const { isDownloading, download: downloadSharedPdf } = useSharedPdfDownload()
 
-  // PDF 다운로드 (TODO: 실제 API 연동)
+  // PDF 다운로드
   const handleDownloadPdf = async () => {
-    setIsDownloading(true)
-    try {
-      // TODO: 실제 PDF 생성 API 호출
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+    const result = await downloadSharedPdf(shareId, quoteNumber)
+    if (result.success) {
       toast.success("PDF 다운로드가 완료되었습니다.")
-    } catch (err) {
-      toast.error("PDF 다운로드에 실패했습니다. 다시 시도해주세요.")
-    } finally {
-      setIsDownloading(false)
+    } else {
+      toast.error(result.error || "PDF 다운로드에 실패했습니다. 다시 시도해주세요.")
     }
   }
 

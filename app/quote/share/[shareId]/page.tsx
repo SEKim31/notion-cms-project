@@ -7,23 +7,58 @@ import {
   QuoteNotesCard,
   SharedQuoteActions,
 } from "@/components/features/quotes"
-import { getMockQuoteByShareId } from "@/lib/mock/quotes"
+import { createAdminClient } from "@/lib/supabase/server"
 import type { PageParams } from "@/types"
+import type { Quote, QuoteStatus, QuoteItem } from "@/types/database"
 
 // 공유 견적서 페이지 (클라이언트용, 인증 불필요)
 export default async function SharedQuotePage({ params }: PageParams) {
   const { shareId } = await params
 
-  // TODO: shareId로 견적서 조회 (공개 API)
-  // 현재는 더미 데이터 사용
-  const quote = getMockQuoteByShareId(shareId)
-
-  if (!quote) {
+  // shareId 형식 검증 (16자리 hex)
+  const shareIdRegex = /^[0-9a-f]{16}$/i
+  if (!shareId || !shareIdRegex.test(shareId)) {
     notFound()
   }
 
-  // TODO: 발행자 정보는 견적서 데이터에서 가져오기
-  const companyName = "테크 솔루션즈"
+  // RLS 우회를 위해 Admin 클라이언트 사용 (공개 페이지)
+  const supabase = await createAdminClient()
+
+  // shareId로 견적서 조회 (소유자 회사명 포함)
+  const { data: quoteData, error: quoteError } = await supabase
+    .from("quotes")
+    .select("*, users!inner(company_name)")
+    .eq("share_id", shareId)
+    .single()
+
+  if (quoteError || !quoteData) {
+    notFound()
+  }
+
+  // DB 컬럼명 → 타입 필드명 변환
+  const quote: Quote = {
+    id: quoteData.id,
+    userId: quoteData.user_id,
+    notionPageId: quoteData.notion_page_id,
+    quoteNumber: quoteData.quote_number,
+    clientName: quoteData.client_name,
+    clientContact: quoteData.client_contact,
+    clientPhone: quoteData.client_phone,
+    clientEmail: quoteData.client_email,
+    items: (quoteData.items || []) as QuoteItem[],
+    totalAmount: quoteData.total_amount,
+    issueDate: new Date(quoteData.issue_date),
+    validUntil: quoteData.valid_until ? new Date(quoteData.valid_until) : null,
+    notes: quoteData.notes,
+    shareId: quoteData.share_id,
+    status: quoteData.status as QuoteStatus,
+    createdAt: new Date(quoteData.created_at),
+    updatedAt: new Date(quoteData.updated_at),
+  }
+
+  // 소유자 회사명 추출
+  const userData = quoteData.users as { company_name: string }
+  const companyName = userData?.company_name || "발행자"
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -38,7 +73,7 @@ export default async function SharedQuotePage({ params }: PageParams) {
               </p>
             </div>
             <SharedQuoteActions
-              quoteId={quote.id}
+              shareId={quote.shareId}
               quoteNumber={quote.quoteNumber}
             />
           </div>
@@ -63,7 +98,7 @@ export default async function SharedQuotePage({ params }: PageParams) {
           {/* 하단 다운로드 버튼 */}
           <div className="flex justify-center border-t pt-8">
             <SharedQuoteActions
-              quoteId={quote.id}
+              shareId={quote.shareId}
               quoteNumber={quote.quoteNumber}
             />
           </div>
