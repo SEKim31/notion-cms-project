@@ -139,7 +139,7 @@
 
 ---
 
-### Phase 5: 노션 연동 및 데이터 동기화 - 진행중
+### Phase 5: 노션 연동 및 데이터 동기화 - 완료
 
 - **Task 014: 노션 API 클라이언트 설정** - 완료
   - See: `/tasks/014-notion-client.md`
@@ -155,65 +155,67 @@
   - 설정 저장 API 연결
   - **테스트 체크리스트**: Playwright MCP를 활용한 설정 저장/불러오기 테스트 ✅
 
-- **Task 016: 데이터 동기화 구현 (F012)** - 우선순위
+- **Task 016: 데이터 동기화 구현 (F012)** - 완료 ✅
   - See: `/tasks/016-data-sync.md`
-  - 노션 → DB 동기화 API 엔드포인트
-  - 노션 페이지 속성 → Quote 모델 매핑
-  - 수동 동기화 트리거 구현
-  - 동기화 상태 및 히스토리 관리
-  - **테스트 체크리스트**: Playwright MCP를 활용한 동기화 정합성 테스트
+  - 노션 → DB 동기화 API 엔드포인트 (`POST /api/sync`)
+  - 노션 페이지 속성 → Quote 모델 매핑 (`lib/notion/mapper.ts`)
+  - 수동 동기화 트리거 구현 (동기화 버튼 UI 연동)
+  - 동기화 상태 관리 (`lib/sync/status.ts`, `hooks/use-sync.ts`)
+  - 환경 변수 및 DB 설정 모두 지원
+  - **테스트 체크리스트**: Playwright MCP를 활용한 동기화 정합성 테스트 ✅
 
 ---
 
-### Phase 6: 견적서 핵심 기능 구현
+### Phase 6: 견적서 핵심 기능 구현 - 완료
 
-- **Task 017: 견적서 목록 조회 API 구현 (F001, F002)**
+- **Task 017: 견적서 목록 조회 API 구현 (F001, F002)** - 완료 ✅
   - See: `/tasks/017-quote-list-api.md`
-  - 견적서 목록 조회 API 엔드포인트
-  - React Query 연동 (캐싱, 리페칭)
-  - 페이지네이션 처리
+  - 견적서 목록 조회 API 엔드포인트 (`GET /api/quotes`)
+  - React Query 연동 (`useQuotes` 훅)
+  - 페이지네이션, 검색, 필터, 정렬 처리
   - 더미 데이터를 실제 API로 교체
-  - **테스트 체크리스트**: Playwright MCP를 활용한 목록 조회 API 테스트
+  - **테스트 체크리스트**: Playwright MCP를 활용한 목록 조회 API 테스트 ✅
 
-- **Task 018: 견적서 상세 조회 구현 (F003)**
+- **Task 018: 견적서 상세 조회 구현 (F003)** - 완료 ✅
   - See: `/tasks/018-quote-detail-api.md`
-  - 견적서 상세 조회 API 엔드포인트
-  - 사업자용 상세 페이지 데이터 연동
+  - 견적서 상세 조회 API 엔드포인트 (`GET /api/quotes/[id]`)
+  - 사업자용 상세 페이지 데이터 연동 (더미 데이터 → Supabase)
   - 권한 검증 (본인 견적서만 조회)
-  - **테스트 체크리스트**: Playwright MCP를 활용한 상세 조회 및 권한 테스트
+  - `useQuote` React Query 훅 구현
+  - **테스트 체크리스트**: Playwright MCP를 활용한 상세 조회 및 권한 테스트 ✅
 
-- **Task 019: 공유 링크 생성 구현 (F005)**
+- **Task 019: 공유 링크 생성 구현 (F005)** - 완료 ✅
   - See: `/tasks/019-share-link.md`
-  - UUID 기반 shareId 생성 로직
-  - 공유 링크 생성/재생성 API
-  - 클립보드 복사 기능 구현
-  - **테스트 체크리스트**: Playwright MCP를 활용한 공유 링크 생성 및 접근 테스트
+  - UUID 기반 shareId 생성 로직 (동기화 시 자동 생성)
+  - 공유 링크 생성/재생성 API (`POST /api/quotes/[id]/share`)
+  - 클립보드 복사 기능 구현 (`hooks/use-share.ts`)
+  - 재생성 확인 다이얼로그 UI
+  - **테스트 체크리스트**: API 권한 테스트 완료 ✅
 
-- **Task 020: 공유 견적서 페이지 구현 (F003)**
+- **Task 020: 공유 견적서 페이지 구현 (F003)** - 완료 ✅
   - See: `/tasks/020-shared-quote-page.md`
-  - shareId 기반 견적서 조회 API
-  - 공개 페이지 데이터 연동
-  - 존재하지 않는 링크 처리 (404)
-  - **테스트 체크리스트**: Playwright MCP를 활용한 공유 페이지 접근 테스트
+  - shareId 기반 견적서 조회 API (`GET /api/quotes/share/[shareId]`)
+  - 공개 페이지 데이터 연동 (Supabase Admin Client)
+  - 존재하지 않는 링크 처리 (404 페이지)
+  - **테스트 체크리스트**: API 에러 처리 테스트 완료 ✅
 
 ---
 
-### Phase 7: PDF 생성 기능 구현
+### Phase 7: PDF 생성 기능 구현 - 완료
 
-- **Task 021: PDF 템플릿 컴포넌트 작성**
+- **Task 021: PDF 템플릿 컴포넌트 작성** - 완료 ✅
   - See: `/tasks/021-pdf-template.md`
-  - react-pdf/renderer 설정
-  - 견적서 PDF 레이아웃 컴포넌트
-  - 한글 폰트 임베딩 처리
-  - 스타일링 (회사 정보, 품목 테이블, 합계)
+  - @react-pdf/renderer 설치 및 설정
+  - Noto Sans KR 한글 폰트 임베딩
+  - 견적서 PDF 레이아웃 컴포넌트 (`lib/pdf/quote-document.tsx`)
+  - 스타일링 (헤더, 클라이언트 정보, 품목 테이블, 합계, 비고)
 
-- **Task 022: PDF 다운로드 구현 (F004)**
+- **Task 022: PDF 다운로드 구현 (F004)** - 완료 ✅
   - See: `/tasks/022-pdf-download.md`
-  - PDF 생성 API 엔드포인트 (서버 사이드)
-  - 다운로드 버튼 연동
-  - 로딩 상태 및 에러 처리
+  - PDF 생성 API (`GET /api/quotes/[id]/pdf`, `GET /api/quotes/share/[shareId]/pdf`)
+  - 다운로드 훅 (`usePdfDownload`, `useSharedPdfDownload`)
+  - 로딩 상태 및 에러 처리 (toast 메시지)
   - 공유 페이지에서도 PDF 다운로드 지원
-  - **테스트 체크리스트**: Playwright MCP를 활용한 PDF 생성 및 다운로드 테스트
 
 ---
 
