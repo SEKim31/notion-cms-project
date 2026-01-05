@@ -169,7 +169,7 @@ export const DEFAULT_NOTION_MAPPING: NotionQuoteMapping = {
   clientContact: "담당자",
   clientPhone: "연락처",
   clientEmail: "이메일",
-  totalAmount: "총액",
+  totalAmount: "총 금액",
   issueDate: "발행일",
   validUntil: "유효기간",
   notes: "비고",

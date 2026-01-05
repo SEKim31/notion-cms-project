@@ -41,6 +41,7 @@ export function RegisterForm() {
       await registerUser({
         email: data.email,
         password: data.password,
+        confirmPassword: data.confirmPassword,
         companyName: data.companyName,
         name: data.name,
       })

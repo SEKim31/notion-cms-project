@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server"
 import { v4 as uuidv4 } from "uuid"
-import { createClient } from "@/lib/supabase/server"
+import { createClient, createAdminClient } from "@/lib/supabase/server"
 import { decrypt } from "@/lib/crypto"
 import { queryAllPages, isDatabasePage } from "@/lib/notion"
 import { mapNotionPageToQuote } from "@/lib/notion/mapper"
@@ -213,8 +213,9 @@ export async function POST(
       })
     }
 
-    // 기존 견적서 조회 (notionPageId 기준)
-    const { data: existingQuotes, error: existingError } = await supabase
+    // 기존 견적서 조회 (notionPageId 기준) - RLS 우회를 위해 admin 클라이언트 사용
+    const adminClient = await createAdminClient()
+    const { data: existingQuotes, error: existingError } = await adminClient
       .from("quotes")
       .select("id, notion_page_id, updated_at")
       .eq("user_id", user.id)
@@ -302,7 +303,7 @@ export async function POST(
       const existing = existingQuotesMap.get(quote.notion_page_id)
       if (existing) {
         // 기존 share_id 조회
-        const { data: existingQuote } = await supabase
+        const { data: existingQuote } = await adminClient
           .from("quotes")
           .select("share_id")
           .eq("id", existing.id)
@@ -314,9 +315,9 @@ export async function POST(
       }
     }
 
-    // DB에 upsert
+    // DB에 upsert - RLS 우회를 위해 admin 클라이언트 사용
     if (quotesToUpsert.length > 0) {
-      const { error: upsertError } = await supabase
+      const { error: upsertError } = await adminClient
         .from("quotes")
         .upsert(quotesToUpsert, {
           onConflict: "notion_page_id",

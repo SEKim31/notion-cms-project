@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { createClient, createAdminClient } from "@/lib/supabase/server"
 import { registerSchema } from "@/lib/validations/auth"
 
 /**
@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
     const validationResult = registerSchema.safeParse(body)
 
     if (!validationResult.success) {
+      console.error("유효성 검사 실패:", validationResult.error.issues)
       return NextResponse.json(
         {
           error: "입력 데이터가 올바르지 않습니다.",
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { email, password, companyName } = validationResult.data
+    const { email, password, companyName, name } = validationResult.data
 
     // 2. Supabase Auth 회원가입
     const supabase = await createClient()
@@ -32,6 +33,7 @@ export async function POST(request: NextRequest) {
       password,
       options: {
         data: {
+          name: name,
           company_name: companyName,
         },
       },
@@ -52,8 +54,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 3. users 테이블에 추가 정보 저장
-    const { error: dbError } = await supabase.from("users").insert({
+    // 3. users 테이블에 추가 정보 저장 (RLS 우회를 위해 admin 클라이언트 사용)
+    // Note: name은 Supabase Auth의 user_metadata에 저장됨
+    const adminClient = await createAdminClient()
+    const { error: dbError } = await adminClient.from("users").insert({
       id: authData.user.id,
       email,
       company_name: companyName,
