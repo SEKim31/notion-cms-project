@@ -4,9 +4,16 @@ import { Font } from "@react-pdf/renderer"
 // 폰트 등록 여부 플래그
 let fontsRegistered = false
 
+// CDN에서 폰트 로드 (fontsource via jsdelivr)
+const FONT_URLS = {
+  regular:
+    "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-kr@latest/korean-400-normal.ttf",
+  bold: "https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-kr@latest/korean-700-normal.ttf",
+}
+
 /**
  * 한글 폰트 등록
- * Noto Sans KR 폰트 사용
+ * Noto Sans KR 폰트 사용 (CDN)
  */
 export function registerFonts() {
   if (fontsRegistered) return
@@ -15,11 +22,11 @@ export function registerFonts() {
     family: "NotoSansKR",
     fonts: [
       {
-        src: "/fonts/NotoSansKR-Regular.ttf",
+        src: FONT_URLS.regular,
         fontWeight: "normal",
       },
       {
-        src: "/fonts/NotoSansKR-Bold.ttf",
+        src: FONT_URLS.bold,
         fontWeight: "bold",
       },
     ],
