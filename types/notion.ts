@@ -157,6 +157,7 @@ export interface NotionQuoteMapping {
   validUntil?: string // 유효기간 속성명
   notes?: string // 비고 속성명
   items?: string // 품목 관련 (relation 또는 별도 처리)
+  status?: string // 노션 상태 속성명
 }
 
 /**
@@ -173,6 +174,7 @@ export const DEFAULT_NOTION_MAPPING: NotionQuoteMapping = {
   issueDate: "발행일",
   validUntil: "유효기간",
   notes: "비고",
+  status: "상태",
 }
 
 /**

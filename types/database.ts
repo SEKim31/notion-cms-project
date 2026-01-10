@@ -9,6 +9,9 @@ export enum QuoteStatus {
   SENT = "SENT", // 발송됨
   VIEWED = "VIEWED", // 조회됨
   EXPIRED = "EXPIRED", // 만료됨
+  APPROVED = "APPROVED", // 승인
+  REJECTED = "REJECTED", // 거절
+  COMPLETED = "COMPLETED", // 작성완료
 }
 
 /**

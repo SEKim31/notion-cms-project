@@ -170,6 +170,12 @@ export function mapNotionPageToQuote(
     ? getRichText(getPropertyByName(properties, mapping.notes))
     : null
 
+  // 상태값 추출 및 변환
+  const notionStatus = mapping.status
+    ? getSelect(getPropertyByName(properties, mapping.status))
+    : null
+  const status = mapNotionStatusToQuoteStatus(notionStatus)
+
   // 품목은 별도 처리 필요 (관계형 속성 또는 JSON 파싱)
   // 현재는 빈 배열로 처리
   const items: QuoteItem[] = []
@@ -187,7 +193,7 @@ export function mapNotionPageToQuote(
     issueDate,
     validUntil,
     notes: notes || null,
-    status: QuoteStatus.DRAFT,
+    status,
   }
 }
 
@@ -300,4 +306,97 @@ export const propertyExtractor = {
   getUrl,
   getEmail,
   getPhone,
+}
+
+/**
+ * 노션 상태값 → QuoteStatus 매핑 테이블
+ * 한글/영문 상태값을 모두 지원
+ */
+export const NOTION_STATUS_MAPPING: Record<string, QuoteStatus> = {
+  // 한글 매핑 - DRAFT (작성 중)
+  "작성중": QuoteStatus.DRAFT,
+  "작성 중": QuoteStatus.DRAFT,
+  "초안": QuoteStatus.DRAFT,
+
+  // 한글 매핑 - COMPLETED (작성완료)
+  "작성완료": QuoteStatus.COMPLETED,
+  "작성 완료": QuoteStatus.COMPLETED,
+  "완료": QuoteStatus.COMPLETED,
+
+  // 한글 매핑 - SENT (발송됨)
+  "발송완료": QuoteStatus.SENT,
+  "발송 완료": QuoteStatus.SENT,
+  "발송됨": QuoteStatus.SENT,
+  "발송": QuoteStatus.SENT,
+
+  // 한글 매핑 - VIEWED (조회됨)
+  "조회됨": QuoteStatus.VIEWED,
+  "조회": QuoteStatus.VIEWED,
+  "확인됨": QuoteStatus.VIEWED,
+  "확인": QuoteStatus.VIEWED,
+
+  // 한글 매핑 - APPROVED (승인)
+  "승인": QuoteStatus.APPROVED,
+  "승인됨": QuoteStatus.APPROVED,
+  "수락": QuoteStatus.APPROVED,
+  "수락됨": QuoteStatus.APPROVED,
+
+  // 한글 매핑 - REJECTED (거절)
+  "거절": QuoteStatus.REJECTED,
+  "거절됨": QuoteStatus.REJECTED,
+  "반려": QuoteStatus.REJECTED,
+  "반려됨": QuoteStatus.REJECTED,
+
+  // 한글 매핑 - EXPIRED (만료됨)
+  "만료": QuoteStatus.EXPIRED,
+  "만료됨": QuoteStatus.EXPIRED,
+
+  // 영문 매핑 (소문자)
+  "draft": QuoteStatus.DRAFT,
+  "completed": QuoteStatus.COMPLETED,
+  "sent": QuoteStatus.SENT,
+  "viewed": QuoteStatus.VIEWED,
+  "approved": QuoteStatus.APPROVED,
+  "rejected": QuoteStatus.REJECTED,
+  "expired": QuoteStatus.EXPIRED,
+
+  // 영문 매핑 (대문자)
+  "DRAFT": QuoteStatus.DRAFT,
+  "COMPLETED": QuoteStatus.COMPLETED,
+  "SENT": QuoteStatus.SENT,
+  "VIEWED": QuoteStatus.VIEWED,
+  "APPROVED": QuoteStatus.APPROVED,
+  "REJECTED": QuoteStatus.REJECTED,
+  "EXPIRED": QuoteStatus.EXPIRED,
+}
+
+/**
+ * 노션 상태값을 QuoteStatus enum으로 변환
+ * @param notionStatus - 노션 Select 속성에서 추출한 상태값
+ * @returns QuoteStatus enum 값 (인식 불가 시 DRAFT 반환)
+ */
+export function mapNotionStatusToQuoteStatus(
+  notionStatus: string | null | undefined
+): QuoteStatus {
+  // null, undefined, 빈 문자열 처리
+  if (!notionStatus || notionStatus.trim() === "") {
+    return QuoteStatus.DRAFT
+  }
+
+  // 공백 제거 후 매핑 테이블 조회
+  const normalized = notionStatus.trim()
+
+  // 정확히 일치하는 값 찾기
+  if (NOTION_STATUS_MAPPING[normalized]) {
+    return NOTION_STATUS_MAPPING[normalized]
+  }
+
+  // 소문자로 변환 후 찾기
+  const lowerCase = normalized.toLowerCase()
+  if (NOTION_STATUS_MAPPING[lowerCase]) {
+    return NOTION_STATUS_MAPPING[lowerCase]
+  }
+
+  // 매칭 실패 시 기본값 반환
+  return QuoteStatus.DRAFT
 }

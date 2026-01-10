@@ -73,6 +73,12 @@ export function getStatusBadgeVariant(
       return "outline"
     case QuoteStatus.EXPIRED:
       return "destructive"
+    case QuoteStatus.APPROVED:
+      return "default" // 파란색 (승인됨)
+    case QuoteStatus.REJECTED:
+      return "destructive" // 빨간색 (거절됨)
+    case QuoteStatus.COMPLETED:
+      return "outline" // 테두리 (작성완료)
     default:
       return "default"
   }
@@ -91,6 +97,12 @@ export function getStatusLabel(status: QuoteStatus): string {
       return "조회됨"
     case QuoteStatus.EXPIRED:
       return "만료됨"
+    case QuoteStatus.APPROVED:
+      return "승인"
+    case QuoteStatus.REJECTED:
+      return "거절"
+    case QuoteStatus.COMPLETED:
+      return "작성완료"
     default:
       return status
   }
