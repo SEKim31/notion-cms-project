@@ -6,8 +6,9 @@ import { NextRequest, NextResponse } from "next/server"
 import { v4 as uuidv4 } from "uuid"
 import { createClient, createAdminClient } from "@/lib/supabase/server"
 import { decrypt } from "@/lib/crypto"
-import { queryAllPages, isDatabasePage } from "@/lib/notion"
-import { mapNotionPageToQuote } from "@/lib/notion/mapper"
+import { queryAllPages, isDatabasePage, getPages, getRelation } from "@/lib/notion"
+import { mapNotionPageToQuote, mapNotionItemPagesToQuoteItems } from "@/lib/notion/mapper"
+import { DEFAULT_NOTION_MAPPING } from "@/types"
 import { getSyncStatus, updateLastSyncTime, createEmptySyncResult } from "@/lib/sync"
 import { getEnvNotionApiKey, getEnvDatabaseId, hasEnvNotionConfig } from "@/lib/notion/client"
 import type { ApiResponse, SyncResponse, SyncStatusResponse } from "@/types/api"
@@ -260,6 +261,29 @@ export async function POST(
         // 타입 캐스팅: isDatabasePage가 true이면 PageObjectResponse 타입
         const typedPage = page as PageObjectResponse
         const quoteInput: CreateQuoteInput = mapNotionPageToQuote(typedPage, user.id)
+
+        // 품목 Relation 처리
+        const itemsPropertyName = DEFAULT_NOTION_MAPPING.items || "품목"
+        const itemsProperty = typedPage.properties[itemsPropertyName]
+        const itemPageIds = getRelation(itemsProperty)
+
+        if (itemPageIds.length > 0) {
+          console.log(`[품목 조회] 견적서 ${quoteInput.quoteNumber}: ${itemPageIds.length}개 품목 연결됨`)
+          try {
+            // 연결된 품목 페이지들 조회
+            const itemPages = await getPages(apiKey!, itemPageIds)
+            // QuoteItem으로 변환
+            const items = mapNotionItemPagesToQuoteItems(
+              itemPages.filter((p): p is PageObjectResponse => p.object === "page" && "properties" in p)
+            )
+            quoteInput.items = items
+            console.log(`[품목 조회] 견적서 ${quoteInput.quoteNumber}: ${items.length}개 품목 변환 완료`)
+          } catch (itemError) {
+            console.error(`[품목 조회 실패] 견적서 ${quoteInput.quoteNumber}:`, itemError)
+            // 품목 조회 실패해도 견적서는 저장
+          }
+        }
+
         const existing = existingQuotesMap.get(quoteInput.notionPageId)
 
         // DB에 저장할 데이터 형식으로 변환

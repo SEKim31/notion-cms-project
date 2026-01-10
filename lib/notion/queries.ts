@@ -131,6 +131,34 @@ export async function getPage(
 }
 
 /**
+ * 여러 노션 페이지 일괄 조회
+ * @param apiKey - 노션 API 키
+ * @param pageIds - 페이지 ID 목록
+ * @returns 페이지 정보 목록 (조회 실패한 페이지는 제외)
+ */
+export async function getPages(
+  apiKey: string,
+  pageIds: string[]
+): Promise<GetPageResponse[]> {
+  if (pageIds.length === 0) return []
+
+  const results: GetPageResponse[] = []
+
+  // 순차적으로 조회 (Rate Limit 고려)
+  for (const pageId of pageIds) {
+    try {
+      const page = await getPage(apiKey, pageId)
+      results.push(page)
+    } catch (error) {
+      console.error(`페이지 조회 실패 (${pageId}):`, error)
+      // 실패한 페이지는 건너뜀
+    }
+  }
+
+  return results
+}
+
+/**
  * 노션 데이터베이스 정보 조회
  * @param apiKey - 노션 API 키
  * @param databaseId - 데이터베이스 ID

@@ -57,11 +57,13 @@ export {
   type NotionDatabaseQueryResponse,
   type NotionDatabaseInfoResponse,
   type NotionQuoteMapping,
+  type NotionItemMapping,
   type NotionToQuoteMapper,
   type NotionClientConfig,
   type NotionSyncOptions,
   type NotionPropertyExtractor,
   DEFAULT_NOTION_MAPPING,
+  DEFAULT_ITEM_MAPPING,
 } from "./notion"
 
 // ============================================

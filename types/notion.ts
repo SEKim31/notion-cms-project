@@ -175,6 +175,29 @@ export const DEFAULT_NOTION_MAPPING: NotionQuoteMapping = {
   validUntil: "유효기간",
   notes: "비고",
   status: "상태",
+  items: "품목", // 품목 Relation 속성명
+}
+
+/**
+ * 품목 데이터베이스 속성 매핑 설정
+ */
+export interface NotionItemMapping {
+  name: string // 품목명 속성명
+  quantity: string // 수량 속성명
+  unitPrice: string // 단가 속성명
+  amount?: string // 금액 속성명 (선택, 없으면 수량*단가로 계산)
+  description?: string // 설명 속성명
+}
+
+/**
+ * 기본 품목 매핑 설정
+ */
+export const DEFAULT_ITEM_MAPPING: NotionItemMapping = {
+  name: "품목명",
+  quantity: "수량",
+  unitPrice: "단가",
+  amount: "금액",
+  description: "설명",
 }
 
 /**

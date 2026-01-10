@@ -7,10 +7,11 @@ import type {
 } from "@notionhq/client/build/src/api-endpoints"
 import type {
   NotionQuoteMapping,
+  NotionItemMapping,
   CreateQuoteInput,
   QuoteItem,
 } from "@/types"
-import { QuoteStatus, DEFAULT_NOTION_MAPPING } from "@/types"
+import { QuoteStatus, DEFAULT_NOTION_MAPPING, DEFAULT_ITEM_MAPPING } from "@/types"
 
 // 노션 페이지 타입
 type NotionPage = PageObjectResponse
@@ -94,6 +95,14 @@ export function getPhone(property: NotionProperty | undefined): string | null {
 }
 
 /**
+ * 노션 속성에서 Relation 값 추출 (연결된 페이지 ID 목록)
+ */
+export function getRelation(property: NotionProperty | undefined): string[] {
+  if (!property || property.type !== "relation") return []
+  return property.relation.map((r) => r.id)
+}
+
+/**
  * 속성명으로 속성 조회 (대소문자 무시)
  */
 function getPropertyByName(
@@ -171,10 +180,22 @@ export function mapNotionPageToQuote(
     : null
 
   // 상태값 추출 및 변환
-  const notionStatus = mapping.status
-    ? getSelect(getPropertyByName(properties, mapping.status))
-    : null
+  const statusProperty = mapping.status
+    ? getPropertyByName(properties, mapping.status)
+    : undefined
+  const notionStatus = statusProperty ? getSelect(statusProperty) : null
   const status = mapNotionStatusToQuoteStatus(notionStatus)
+
+  // 디버깅: 상태값 추출 로그
+  console.log(`[상태 동기화] 견적서: ${quoteNumber}`)
+  console.log(`  - 노션 속성 목록: ${Object.keys(properties).join(", ")}`)
+  console.log(`  - 매핑 속성명: "${mapping.status}"`)
+  console.log(`  - 속성 찾음: ${statusProperty ? "예" : "아니오"}`)
+  if (statusProperty) {
+    console.log(`  - 속성 타입: ${statusProperty.type}`)
+  }
+  console.log(`  - 노션 상태값: "${notionStatus}"`)
+  console.log(`  - 변환된 상태: ${status}`)
 
   // 품목은 별도 처리 필요 (관계형 속성 또는 JSON 파싱)
   // 현재는 빈 배열로 처리
@@ -306,6 +327,66 @@ export const propertyExtractor = {
   getUrl,
   getEmail,
   getPhone,
+  getRelation,
+}
+
+/**
+ * 노션 품목 페이지를 QuoteItem으로 변환
+ * @param page - 노션 품목 페이지
+ * @param mapping - 품목 속성 매핑 설정 (선택)
+ * @returns QuoteItem 객체
+ */
+export function mapNotionItemPageToQuoteItem(
+  page: NotionPage,
+  mapping: NotionItemMapping = DEFAULT_ITEM_MAPPING
+): QuoteItem {
+  const properties = page.properties
+
+  // 품목명 추출 (Title 또는 Rich Text)
+  const name =
+    getTitle(getPropertyByName(properties, mapping.name)) ||
+    getRichText(getPropertyByName(properties, mapping.name)) ||
+    "품목명 없음"
+
+  // 수량 추출
+  const quantity = getNumber(getPropertyByName(properties, mapping.quantity)) ?? 1
+
+  // 단가 추출
+  const unitPrice = getNumber(getPropertyByName(properties, mapping.unitPrice)) ?? 0
+
+  // 금액 추출 (있으면 사용, 없으면 계산)
+  let amount = 0
+  if (mapping.amount) {
+    amount = getNumber(getPropertyByName(properties, mapping.amount)) ?? quantity * unitPrice
+  } else {
+    amount = quantity * unitPrice
+  }
+
+  // 설명 추출
+  const description = mapping.description
+    ? getRichText(getPropertyByName(properties, mapping.description)) || undefined
+    : undefined
+
+  return {
+    name,
+    quantity,
+    unitPrice,
+    amount,
+    description,
+  }
+}
+
+/**
+ * 여러 노션 품목 페이지를 QuoteItem 배열로 변환
+ * @param pages - 노션 품목 페이지 목록
+ * @param mapping - 품목 속성 매핑 설정 (선택)
+ * @returns QuoteItem 배열
+ */
+export function mapNotionItemPagesToQuoteItems(
+  pages: NotionPage[],
+  mapping?: NotionItemMapping
+): QuoteItem[] {
+  return pages.map((page) => mapNotionItemPageToQuoteItem(page, mapping))
 }
 
 /**
