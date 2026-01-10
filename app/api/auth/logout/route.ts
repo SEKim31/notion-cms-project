@@ -20,10 +20,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
+    // 응답 생성
+    const response = NextResponse.json(
       { message: "로그아웃되었습니다." },
       { status: 200 }
     )
+
+    // Supabase 인증 관련 쿠키를 명시적으로 삭제
+    // 쿠키 이름 패턴: sb-{project-ref}-auth-token (청크 포함: .0, .1 등)
+    const cookiesToDelete = request.cookies.getAll()
+      .filter(cookie => cookie.name.startsWith("sb-"))
+
+    cookiesToDelete.forEach(cookie => {
+      response.cookies.delete(cookie.name)
+    })
+
+    return response
   } catch (error) {
     console.error("로그아웃 처리 에러:", error)
     return NextResponse.json(
