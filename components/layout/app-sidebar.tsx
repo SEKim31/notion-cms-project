@@ -24,10 +24,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Logo } from "@/components/common"
 import { dashboardNav } from "@/config/navigation"
+import { useAuth } from "@/hooks/use-auth"
 
 // 대시보드 사이드바 컴포넌트
 export function AppSidebar() {
   const pathname = usePathname()
+  const { user, logout } = useAuth()
 
   return (
     <Sidebar>
@@ -70,7 +72,7 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <User2 className="h-4 w-4" />
-                  <span>홍길동</span>
+                  <span>{user?.companyName || user?.email || "사용자"}</span>
                   <ChevronUp className="ml-auto h-4 w-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -81,12 +83,7 @@ export function AppSidebar() {
                 <DropdownMenuItem asChild>
                   <Link href="/settings">설정</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    // TODO: 로그아웃 처리
-                    console.log("로그아웃")
-                  }}
-                >
+                <DropdownMenuItem onSelect={() => logout()}>
                   로그아웃
                 </DropdownMenuItem>
               </DropdownMenuContent>
