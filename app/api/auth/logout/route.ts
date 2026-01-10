@@ -32,7 +32,15 @@ export async function POST(request: NextRequest) {
       .filter(cookie => cookie.name.startsWith("sb-"))
 
     cookiesToDelete.forEach(cookie => {
-      response.cookies.delete(cookie.name)
+      // 프로덕션 환경에서도 쿠키가 삭제되도록 옵션 명시
+      response.cookies.set(cookie.name, "", {
+        path: "/",
+        expires: new Date(0),
+        maxAge: 0,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      })
     })
 
     return response
