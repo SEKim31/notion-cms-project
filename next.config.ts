@@ -11,19 +11,15 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       // 아이콘 라이브러리
       "lucide-react",
-      "@radix-ui/react-icons",
       // Radix UI 컴포넌트
       "@radix-ui/react-alert-dialog",
       "@radix-ui/react-avatar",
-      "@radix-ui/react-dialog",
       "@radix-ui/react-dropdown-menu",
       "@radix-ui/react-label",
-      "@radix-ui/react-scroll-area",
       "@radix-ui/react-separator",
       "@radix-ui/react-slot",
       "@radix-ui/react-tooltip",
       // 유틸리티 라이브러리
-      "date-fns",
       "class-variance-authority",
     ],
   },

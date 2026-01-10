@@ -5,8 +5,8 @@ import Link from "next/link"
 import { FileText, Settings } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/common/empty-state"
+import { QuoteListSkeleton } from "@/components/skeleton/quote-list-skeleton"
 import { QuoteCard } from "./quote-card"
 import { QuoteListToolbar, SyncStatus } from "./quote-list-toolbar"
 import { QuoteSummary, QuoteStatus } from "@/types"
@@ -158,47 +158,6 @@ export function QuoteList({
             총 {quotes.length}개 중 {filteredQuotes.length}개 표시
           </p>
         )}
-    </div>
-  )
-}
-
-// 견적서 목록 스켈레톤 UI
-function QuoteListSkeleton() {
-  return (
-    <div className="flex flex-col gap-6">
-      {/* 툴바 스켈레톤 */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Skeleton className="h-10 w-full max-w-md" />
-        <div className="flex gap-2">
-          <Skeleton className="h-10 w-20" />
-          <Skeleton className="h-10 w-24" />
-        </div>
-      </div>
-
-      {/* 카드 그리드 스켈레톤 */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="rounded-lg border p-6">
-            <div className="space-y-4">
-              <div className="flex justify-between">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-5 w-32" />
-                </div>
-                <Skeleton className="h-6 w-16" />
-              </div>
-              <div className="space-y-2">
-                <Skeleton className="h-6 w-28" />
-                <Skeleton className="h-4 w-20" />
-              </div>
-              <div className="flex gap-2 pt-2">
-                <Skeleton className="h-9 flex-1" />
-                <Skeleton className="h-9 w-9" />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   )
 }
