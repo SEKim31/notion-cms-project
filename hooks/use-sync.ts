@@ -3,6 +3,8 @@
 // 동기화 관련 React Query 훅
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+
+import { CACHE_CONFIG, queryKeys } from "@/lib/query"
 import type { SyncResponse, SyncStatusResponse, ApiResponse } from "@/types/api"
 
 /**
@@ -60,9 +62,10 @@ async function executeSync(force: boolean = false): Promise<SyncResponse> {
  */
 export function useSyncStatus() {
   return useQuery({
-    queryKey: ["syncStatus"],
+    queryKey: queryKeys.sync.status(),
     queryFn: fetchSyncStatus,
-    staleTime: 1000 * 60, // 1분간 캐시
+    staleTime: CACHE_CONFIG.sync.staleTime,
+    gcTime: CACHE_CONFIG.sync.gcTime,
     refetchOnWindowFocus: false,
   })
 }
@@ -77,8 +80,8 @@ export function useSync() {
     mutationFn: (force: boolean = false) => executeSync(force),
     onSuccess: () => {
       // 동기화 성공 시 관련 쿼리 무효화
-      queryClient.invalidateQueries({ queryKey: ["syncStatus"] })
-      queryClient.invalidateQueries({ queryKey: ["quotes"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.sync.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.quotes.all })
     },
   })
 }

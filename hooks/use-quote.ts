@@ -3,6 +3,8 @@
 // 견적서 상세 조회 React Query 훅
 
 import { useQuery, useQueryClient } from "@tanstack/react-query"
+
+import { CACHE_CONFIG, queryKeys } from "@/lib/query"
 import type { QuoteDetailResponse, ApiResponse } from "@/types/api"
 
 /**
@@ -58,9 +60,10 @@ async function fetchQuote(id: string): Promise<QuoteDetailResponse> {
  */
 export function useQuote(id: string) {
   return useQuery({
-    queryKey: ["quote", id],
+    queryKey: queryKeys.quotes.detail(id),
     queryFn: () => fetchQuote(id),
-    staleTime: 1000 * 60 * 5, // 5분간 캐시
+    staleTime: CACHE_CONFIG.quotes.detail.staleTime,
+    gcTime: CACHE_CONFIG.quotes.detail.gcTime,
     refetchOnWindowFocus: false,
     enabled: !!id, // id가 있을 때만 쿼리 실행
     retry: (failureCount, error) => {
@@ -83,8 +86,9 @@ export function usePrefetchQuote() {
 
   return (id: string) => {
     return queryClient.prefetchQuery({
-      queryKey: ["quote", id],
+      queryKey: queryKeys.quotes.detail(id),
       queryFn: () => fetchQuote(id),
+      staleTime: CACHE_CONFIG.quotes.detail.staleTime,
     })
   }
 }
@@ -97,9 +101,9 @@ export function useInvalidateQuote() {
 
   return (id?: string) => {
     if (id) {
-      queryClient.invalidateQueries({ queryKey: ["quote", id] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.quotes.detail(id) })
     } else {
-      queryClient.invalidateQueries({ queryKey: ["quote"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.quotes.details() })
     }
   }
 }

@@ -3,6 +3,8 @@
 // 견적서 목록 조회 React Query 훅
 
 import { useQuery, useQueryClient } from "@tanstack/react-query"
+
+import { CACHE_CONFIG, queryKeys } from "@/lib/query"
 import type { QuoteListResponse, QuoteListParams, ApiResponse } from "@/types/api"
 
 /**
@@ -48,9 +50,10 @@ async function fetchQuotes(params: QuoteListParams = {}): Promise<QuoteListRespo
  */
 export function useQuotes(params: QuoteListParams = {}) {
   return useQuery({
-    queryKey: ["quotes", params],
+    queryKey: queryKeys.quotes.list(params),
     queryFn: () => fetchQuotes(params),
-    staleTime: 1000 * 60, // 1분간 캐시
+    staleTime: CACHE_CONFIG.quotes.list.staleTime,
+    gcTime: CACHE_CONFIG.quotes.list.gcTime,
     refetchOnWindowFocus: false,
   })
 }
@@ -63,8 +66,9 @@ export function usePrefetchQuotes() {
 
   return (params: QuoteListParams = {}) => {
     return queryClient.prefetchQuery({
-      queryKey: ["quotes", params],
+      queryKey: queryKeys.quotes.list(params),
       queryFn: () => fetchQuotes(params),
+      staleTime: CACHE_CONFIG.quotes.list.staleTime,
     })
   }
 }
@@ -76,6 +80,6 @@ export function useInvalidateQuotes() {
   const queryClient = useQueryClient()
 
   return () => {
-    queryClient.invalidateQueries({ queryKey: ["quotes"] })
+    queryClient.invalidateQueries({ queryKey: queryKeys.quotes.all })
   }
 }

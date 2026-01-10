@@ -219,28 +219,30 @@
 
 ---
 
-### Phase 8: 테스트, 최적화 및 배포
+### Phase 8: 테스트, 최적화 및 배포 - 완료
 
-- **Task 023: 통합 테스트 및 E2E 테스트**
+- **Task 023: 통합 테스트 및 E2E 테스트** - 완료 ✅
   - See: `/tasks/023-integration-tests.md`
-  - 주요 사용자 플로우 E2E 테스트
-  - API 엔드포인트 통합 테스트
-  - 에러 핸들링 및 엣지 케이스 테스트
-  - **테스트 체크리스트**: Playwright MCP를 활용한 전체 사용자 플로우 검증
+  - Playwright 설정 및 테스트 유틸리티 구축
+  - 인증 플로우 E2E 테스트 (12개 테스트)
+  - 견적서 목록/상세 테스트 (10개 테스트)
+  - 공유 기능/PDF/동기화 테스트 (16개 테스트)
+  - API 권한 및 보호된 라우트 검증
+  - **총 38개 테스트 케이스 작성 완료**
 
-- **Task 024: 성능 최적화**
+- **Task 024: 성능 최적화** - 완료 ✅
   - See: `/tasks/024-performance.md`
-  - React Query 캐싱 전략 최적화
-  - 이미지 및 폰트 최적화
-  - 코드 스플리팅 및 번들 사이즈 최적화
-  - 로딩 상태 및 Skeleton UI 개선
+  - @next/bundle-analyzer 설치 및 optimizePackageImports 적용
+  - React Query 캐싱 전략 최적화 (쿼리별 staleTime/gcTime, 쿼리 키 팩토리)
+  - Skeleton UI 컴포넌트 (QuoteList, QuoteDetail, Settings)
+  - 페이지별 loading.tsx 생성
 
-- **Task 025: Vercel 배포 및 프로덕션 설정**
+- **Task 025: Vercel 배포 및 프로덕션 설정** - 완료 ✅
   - See: `/tasks/025-deployment.md`
-  - Vercel 프로젝트 설정
-  - 환경 변수 설정 (프로덕션)
-  - 도메인 연결 및 HTTPS 설정
-  - 실제 노션 데이터베이스 연동 테스트
+  - 프로덕션 빌드 검증 완료 (lint 통과, 빌드 성공)
+  - `.env.example` 환경 변수 문서화
+  - `docs/DEPLOYMENT.md` 배포 가이드 작성
+  - Vercel 배포 준비 완료
 
 ---
 
