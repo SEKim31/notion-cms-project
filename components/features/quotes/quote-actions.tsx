@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Download, Link2, Loader2, ExternalLink, RefreshCw } from "lucide-react"
+import { ArrowLeft, Download, Link2, Loader2, ExternalLink, RefreshCw, Mail } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -25,22 +25,26 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useRegenerateShareLink, copyShareLinkToClipboard } from "@/hooks/use-share"
 import { usePdfDownload, useSharedPdfDownload } from "@/hooks/use-pdf"
+import { SendEmailDialog } from "./send-email-dialog"
 
 interface QuoteActionsProps {
   quoteId: string
   shareId: string
   quoteNumber: string
+  clientEmail?: string | null
   showBackButton?: boolean
 }
 
-// 견적서 액션 버튼 컴포넌트 (PDF 다운로드, 공유 링크 복사, 재생성)
+// 견적서 액션 버튼 컴포넌트 (PDF 다운로드, 공유 링크 복사, 재생성, 이메일 발송)
 export function QuoteActions({
   quoteId,
   shareId: initialShareId,
   quoteNumber,
+  clientEmail,
   showBackButton = true,
 }: QuoteActionsProps) {
   const [currentShareId, setCurrentShareId] = useState(initialShareId)
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false)
   const regenerateMutation = useRegenerateShareLink()
   const { isDownloading, download: downloadPdf } = usePdfDownload()
 
@@ -160,6 +164,19 @@ export function QuoteActions({
           </TooltipContent>
         </Tooltip>
 
+        {/* 이메일 발송 버튼 */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" onClick={() => setEmailDialogOpen(true)}>
+              <Mail className="mr-2 h-4 w-4" />
+              이메일 발송
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>고객에게 견적서를 이메일로 발송합니다</p>
+          </TooltipContent>
+        </Tooltip>
+
         {/* PDF 다운로드 버튼 */}
         <Button onClick={handleDownloadPdf} disabled={isDownloading}>
           {isDownloading ? (
@@ -175,6 +192,15 @@ export function QuoteActions({
           )}
         </Button>
       </div>
+
+      {/* 이메일 발송 다이얼로그 */}
+      <SendEmailDialog
+        quoteId={quoteId}
+        clientEmail={clientEmail}
+        quoteNumber={quoteNumber}
+        isOpen={emailDialogOpen}
+        onClose={() => setEmailDialogOpen(false)}
+      />
     </TooltipProvider>
   )
 }

@@ -216,3 +216,26 @@ export interface PdfGenerateResponse {
   pdfUrl?: string
   fileName?: string
 }
+
+// ============================================
+// 이메일 발송 관련 API 타입
+// ============================================
+
+/**
+ * 이메일 발송 요청
+ */
+export interface SendEmailRequest {
+  to: string // 수신자 이메일
+  subject?: string // 이메일 제목 (기본값: 견적서 발송 안내)
+  message?: string // 추가 메시지 (선택)
+}
+
+/**
+ * 이메일 발송 응답
+ */
+export interface SendEmailResponse {
+  success: boolean
+  message: string
+  emailId?: string // Resend 이메일 ID
+  sentAt?: string // 발송 시간 (ISO 8601)
+}

@@ -1,6 +1,6 @@
 "use client"
 
-import { CalendarDays, Hash, Clock } from "lucide-react"
+import { CalendarDays, Hash, Clock, Mail } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -92,6 +92,28 @@ export function QuoteHeader({ quote, companyName }: QuoteHeaderProps) {
                   {formatDate(quote.validUntil)}
                   {isExpired && " (만료됨)"}
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* 발송 이력 */}
+          {quote.sentAt && (
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
+                <Mail className="h-4 w-4 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  이메일 발송
+                </p>
+                <p className="font-semibold text-green-600 dark:text-green-400">
+                  {formatDate(quote.sentAt)}
+                </p>
+                {quote.sentTo && (
+                  <p className="text-xs text-muted-foreground">
+                    {quote.sentTo}
+                  </p>
+                )}
               </div>
             </div>
           )}

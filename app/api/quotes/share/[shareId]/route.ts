@@ -87,6 +87,8 @@ export async function GET(
       notes: quoteData.notes,
       shareId: quoteData.share_id,
       status: quoteData.status as QuoteStatus,
+      sentAt: quoteData.sent_at ? new Date(quoteData.sent_at) : null,
+      sentTo: quoteData.sent_to,
       createdAt: new Date(quoteData.created_at),
       updatedAt: new Date(quoteData.updated_at),
     }

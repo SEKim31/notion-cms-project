@@ -77,6 +77,8 @@ export interface Quote {
   notes?: string | null // 비고/특이사항
   shareId: string // 공유 링크 고유 ID (unique)
   status: QuoteStatus // 견적서 상태
+  sentAt?: Date | null // 이메일 발송 일시
+  sentTo?: string | null // 이메일 수신자 주소
   createdAt: Date // 데이터 생성일
   updatedAt: Date // 마지막 동기화 시간
 }
