@@ -34,14 +34,29 @@
 3. **환경 변수 설정**
    아래 환경 변수를 Vercel Dashboard에서 설정:
 
+   **필수 환경 변수:**
+
    | 변수명 | 설명 | 환경 |
    |--------|------|------|
    | `NEXT_PUBLIC_SUPABASE_URL` | Supabase 프로젝트 URL | Production, Preview |
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 익명 키 | Production, Preview |
    | `SUPABASE_SERVICE_ROLE_KEY` | Supabase 서비스 롤 키 | Production, Preview |
    | `ENCRYPTION_KEY` | API 키 암호화용 키 | Production, Preview |
-   | `NOTION_API_KEY` | 노션 API 키 (선택) | Production |
-   | `NOTION_DATABASE_ID` | 노션 데이터베이스 ID (선택) | Production |
+
+   **선택 환경 변수 (노션 연동):**
+
+   | 변수명 | 설명 | 환경 |
+   |--------|------|------|
+   | `NOTION_API_KEY` | 노션 API 키 | Production |
+   | `NOTION_DATABASE_ID` | 노션 데이터베이스 ID | Production |
+
+   **선택 환경 변수 (v2 이메일 발송):**
+
+   | 변수명 | 설명 | 환경 |
+   |--------|------|------|
+   | `RESEND_API_KEY` | Resend 이메일 서비스 API 키 | Production |
+   | `EMAIL_FROM` | 발신자 이메일 주소 | Production |
+   | `NEXT_PUBLIC_APP_URL` | 앱 기본 URL (공유 링크용) | Production |
 
 4. **배포**
    - "Deploy" 버튼 클릭
@@ -89,6 +104,17 @@ openssl rand -base64 32
    - 우측 상단 ⋮ 메뉴 → "연결" → 생성한 Integration 추가
    - 데이터베이스 URL에서 32자리 ID를 `NOTION_DATABASE_ID`에 설정
 
+### 이메일 발송 설정 (v2)
+
+1. https://resend.com 에서 계정 생성
+2. API Keys 페이지에서 새 API 키 생성
+3. 생성된 키를 `RESEND_API_KEY`에 설정
+4. `EMAIL_FROM` 설정:
+   - **무료 티어**: `onboarding@resend.dev` 사용
+   - **프로덕션**: 도메인 인증 후 실제 이메일 주소 사용
+5. `NEXT_PUBLIC_APP_URL`을 배포된 도메인으로 설정:
+   - 예: `https://your-app.vercel.app`
+
 ---
 
 ## 도메인 설정
@@ -110,7 +136,7 @@ openssl rand -base64 32
 
 ## 배포 후 확인 사항
 
-1. **기본 기능 테스트**
+1. **기본 기능 테스트 (v1)**
    - [ ] 홈페이지 로딩 확인
    - [ ] 회원가입/로그인 정상 동작
    - [ ] 노션 동기화 정상 동작
@@ -118,13 +144,21 @@ openssl rand -base64 32
    - [ ] 공유 링크 접근 가능
    - [ ] PDF 다운로드 정상
 
-2. **성능 확인**
+2. **v2 기능 테스트**
+   - [ ] 견적서 상태 배지 표시 확인
+   - [ ] 상태별 필터링 동작 확인
+   - [ ] 이메일 발송 버튼 표시 확인
+   - [ ] 이메일 발송 다이얼로그 동작
+   - [ ] 이메일 발송 후 상태 변경 확인
+
+3. **성능 확인**
    - [ ] Vercel Analytics에서 성능 지표 확인
    - [ ] 초기 로딩 시간 3초 이내 확인
 
-3. **보안 확인**
+4. **보안 확인**
    - [ ] 환경 변수가 클라이언트에 노출되지 않음
    - [ ] 인증 없이 대시보드 접근 불가
+   - [ ] 다른 사용자의 견적서에 접근 불가
 
 ---
 

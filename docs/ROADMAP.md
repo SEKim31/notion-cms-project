@@ -285,11 +285,11 @@
 
 ---
 
-### Phase 10: 이메일 자동 발송 기능 - 대기
+### Phase 10: 이메일 자동 발송 기능 - 완료
 
 견적서를 PDF로 첨부하여 클라이언트 이메일로 직접 발송하는 기능 구현
 
-- **Task 029: 이메일 발송 인프라 설정**
+- **Task 029: 이메일 발송 인프라 설정** - 완료
   - 이메일 서비스 선정 및 연동 (Resend, SendGrid, 또는 AWS SES)
   - 환경 변수 설정 (API 키, 발신자 이메일 등)
   - 이메일 발송 유틸리티 함수 구현 (`lib/email/sender.ts`)
@@ -299,7 +299,7 @@
     - `lib/email/templates.ts` (신규 생성)
     - `.env.example` (환경 변수 추가)
 
-- **Task 030: 이메일 발송 API 엔드포인트 구현**
+- **Task 030: 이메일 발송 API 엔드포인트 구현** - 완료
   - 견적서 이메일 발송 API (`POST /api/quotes/[id]/send-email`)
   - 요청 파라미터: 수신자 이메일, 제목, 본문 메시지 (선택)
   - PDF 첨부 파일 생성 및 이메일에 첨부
@@ -309,7 +309,7 @@
     - `app/api/quotes/[id]/send-email/route.ts` (신규 생성)
     - `types/api.ts` (SendEmailRequest, SendEmailResponse 타입 추가)
 
-- **Task 031: 이메일 템플릿 디자인**
+- **Task 031: 이메일 템플릿 디자인** - 완료
   - 견적서 발송용 HTML 이메일 템플릿 작성
   - 반응형 이메일 레이아웃 (모바일 호환)
   - 템플릿 변수 치환 (회사명, 견적서 번호, 금액, 공유 링크 등)
@@ -318,7 +318,7 @@
     - `lib/email/templates/quote-email.tsx` (신규 생성)
     - `lib/email/templates/base-layout.tsx` (신규 생성)
 
-- **Task 032: 이메일 발송 UI 구현**
+- **Task 032: 이메일 발송 UI 구현** - 완료
   - 견적서 상세 페이지에 "이메일 발송" 버튼 추가
   - 이메일 발송 모달/다이얼로그 컴포넌트
   - 수신자 이메일 입력 폼 (clientEmail 자동 채움)
@@ -329,7 +329,7 @@
     - `components/features/quotes/quote-actions.tsx` (수정)
     - `hooks/use-send-email.ts` (신규 생성)
 
-- **Task 033: 이메일 발송 후 상태 업데이트**
+- **Task 033: 이메일 발송 후 상태 업데이트** - 완료
   - 이메일 발송 성공 시 견적서 상태를 "발송완료"로 자동 변경
   - 노션에 상태 업데이트 반영 (선택적 - Notion API 쓰기 권한 필요)
   - 발송 이력 표시 UI (발송 일시, 수신자 이메일)
@@ -340,21 +340,32 @@
 
 ---
 
-### Phase 11: v2 통합 테스트 및 배포 - 대기
+### Phase 11: v2 통합 테스트 및 배포 - 완료
 
 고도화 기능의 통합 테스트 및 프로덕션 배포
 
-- **Task 034: v2 기능 통합 테스트**
-  - 상태 동기화 E2E 테스트 케이스 추가
-  - 이메일 발송 플로우 E2E 테스트 케이스 추가
-  - 기존 테스트와의 회귀 테스트 수행
-  - **테스트 체크리스트**: 전체 사용자 시나리오 E2E 테스트
+- **Task 034: v2 기능 통합 테스트** - 완료
+  - 상태 동기화 E2E 테스트 케이스 검증 (6개 테스트)
+  - 이메일 발송 플로우 E2E 테스트 케이스 추가 (12개 테스트)
+  - 기존 테스트와의 회귀 테스트 수행 (총 62개 테스트, 47개 통과, 15개 스킵)
+  - **테스트 체크리스트**: 전체 사용자 시나리오 E2E 테스트 완료
+  - **관련 파일**:
+    - `e2e/email.spec.ts` (신규 생성)
+    - `e2e/status-sync.spec.ts` (기존 검증)
+    - `tasks/034-v2-integration-tests.md`
 
-- **Task 035: 문서화 및 배포**
-  - v2 기능 사용자 가이드 작성
-  - API 문서 업데이트 (이메일 발송 API)
-  - CHANGELOG.md 작성
-  - Vercel 프로덕션 배포 및 환경 변수 설정
+- **Task 035: 문서화 및 배포** - 완료
+  - v2 기능 사용자 가이드 작성 (`docs/USER_GUIDE_V2.md`)
+  - API 문서 작성 (`docs/API.md`)
+  - CHANGELOG.md 작성 (v1.0.0, v2.0.0 버전 내역)
+  - 배포 가이드 업데이트 (v2 환경 변수 설명 추가)
+  - 빌드 검증 완료 (lint 통과, 빌드 성공)
+  - **관련 파일**:
+    - `docs/USER_GUIDE_V2.md` (신규 생성)
+    - `docs/API.md` (신규 생성)
+    - `CHANGELOG.md` (신규 생성)
+    - `docs/DEPLOYMENT.md` (수정)
+    - `tasks/035-documentation-deployment.md`
 
 ---
 
@@ -378,7 +389,9 @@
 | 기능 ID | 기능명 | 관련 Task | 상태 |
 |---------|--------|-----------|------|
 | F013 | 견적서 상태 동기화 | Task 026, 027, 028 | 완료 |
-| F014 | 이메일 자동 발송 | Task 029, 030, 031, 032, 033 | 대기 |
+| F014 | 이메일 자동 발송 | Task 029, 030, 031, 032, 033 | 완료 |
+| F015 | v2 통합 테스트 | Task 034 | 완료 |
+| F016 | 문서화 및 배포 | Task 035 | 완료 |
 
 ---
 
@@ -399,15 +412,15 @@
 
 **MVP 총 개발 기간: 약 15일 (완료)**
 
-### 고도화 (v2) - 예정
+### 고도화 (v2) - 완료
 
-| Phase | 기간 | 비고 |
+| Phase | 기간 | 상태 |
 |-------|------|------|
-| Phase 9 | 2-3일 | 상태 동기화 (노션 -> 앱) |
-| Phase 10 | 4-5일 | 이메일 자동 발송 기능 |
-| Phase 11 | 1-2일 | 통합 테스트 및 배포 |
+| Phase 9 | 2-3일 | 상태 동기화 완료 |
+| Phase 10 | 4-5일 | 이메일 자동 발송 완료 |
+| Phase 11 | 1-2일 | 통합 테스트 및 배포 완료 |
 
-**v2 예상 개발 기간: 7-10일**
+**v2 총 개발 기간: 약 7일 (완료)**
 
 ---
 
@@ -450,6 +463,19 @@ components/features/quotes/
 
 hooks/
   use-send-email.ts      # 이메일 발송 훅
+
+e2e/
+  email.spec.ts          # 이메일 발송 E2E 테스트
+
+docs/
+  USER_GUIDE_V2.md       # v2 기능 사용자 가이드
+  API.md                 # API 문서
+
+tasks/
+  034-v2-integration-tests.md      # Task 034 작업 파일
+  035-documentation-deployment.md  # Task 035 작업 파일
+
+CHANGELOG.md             # 변경 이력
 ```
 
 ### 수정 파일
