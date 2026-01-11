@@ -238,4 +238,5 @@ export interface SendEmailResponse {
   message: string
   emailId?: string // Resend 이메일 ID
   sentAt?: string // 발송 시간 (ISO 8601)
+  notionUpdated?: boolean // 노션 상태 업데이트 성공 여부
 }

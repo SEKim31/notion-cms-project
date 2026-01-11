@@ -9,7 +9,10 @@ import { createClient } from "@/lib/supabase/server"
 import { QuoteDocument, registerFonts } from "@/lib/pdf"
 import { sendEmail } from "@/lib/email/sender"
 import { QuoteEmailTemplate } from "@/lib/email/templates/quote-email"
-import type { Quote, QuoteItem, QuoteStatus } from "@/types/database"
+import { getNotionClient, updateNotionPageStatus } from "@/lib/notion"
+import { getEnvNotionApiKey } from "@/lib/notion/client"
+import type { Quote, QuoteItem } from "@/types/database"
+import { QuoteStatus } from "@/types/database"
 import type { SendEmailRequest, SendEmailResponse } from "@/types/api"
 import { formatAmount, formatDate } from "@/lib/mock/quotes"
 
@@ -88,14 +91,16 @@ export async function POST(
       )
     }
 
-    // 6. 사용자 회사명 조회
+    // 6. 사용자 회사명 및 노션 API 키 조회
     const { data: userData } = await supabase
       .from("users")
-      .select("company_name")
+      .select("company_name, notion_api_key")
       .eq("id", user.id)
       .single()
 
     const companyName = userData?.company_name || "발행자"
+    // 환경 변수 API 키 우선, 없으면 사용자 설정 사용
+    const notionApiKey = getEnvNotionApiKey() || userData?.notion_api_key
 
     // 7. DB 컬럼명 → 타입 필드명 변환
     const quote: Quote = {
@@ -168,7 +173,7 @@ export async function POST(
       )
     }
 
-    // 13. 발송 성공 시 상태 및 발송 정보 업데이트
+    // 13. 발송 성공 시 상태 및 발송 정보 업데이트 (앱 DB)
     const sentAt = new Date().toISOString()
     await supabase
       .from("quotes")
@@ -180,12 +185,43 @@ export async function POST(
       })
       .eq("id", id)
 
-    // 14. 성공 응답
+    // 14. 노션 데이터베이스 상태 업데이트
+    let notionUpdateResult: { success: boolean; error?: string } | null = null
+    if (notionApiKey && quote.notionPageId) {
+      try {
+        const notionClient = getNotionClient(notionApiKey)
+        notionUpdateResult = await updateNotionPageStatus(
+          notionClient,
+          quote.notionPageId,
+          QuoteStatus.SENT
+        )
+
+        if (!notionUpdateResult.success) {
+          console.warn(
+            `[노션 상태 업데이트 경고] ${notionUpdateResult.error}`
+          )
+        }
+      } catch (notionError) {
+        // 노션 업데이트 실패는 이메일 발송 성공에 영향을 주지 않음
+        console.error("[노션 상태 업데이트 실패]", notionError)
+        notionUpdateResult = {
+          success: false,
+          error: notionError instanceof Error ? notionError.message : "알 수 없는 오류",
+        }
+      }
+    }
+
+    // 15. 성공 응답
+    const responseMessage = notionUpdateResult?.success === false
+      ? `이메일이 발송되었습니다. (노션 상태 업데이트 실패: ${notionUpdateResult.error})`
+      : "이메일이 성공적으로 발송되었습니다."
+
     return NextResponse.json({
       success: true,
-      message: "이메일이 성공적으로 발송되었습니다.",
+      message: responseMessage,
       emailId: result.id,
       sentAt: new Date().toISOString(),
+      notionUpdated: notionUpdateResult?.success ?? false,
     })
   } catch (error) {
     console.error("이메일 발송 오류:", error)

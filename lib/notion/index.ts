@@ -61,3 +61,12 @@ export {
   parseItemsFromJson,
   propertyExtractor,
 } from "./mapper"
+
+// 업데이트 함수
+export {
+  QUOTE_STATUS_TO_NOTION,
+  mapQuoteStatusToNotionStatus,
+  updateNotionPageStatus,
+  updateNotionPagesStatus,
+  type UpdateNotionStatusResult,
+} from "./updater"
